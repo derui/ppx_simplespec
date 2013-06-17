@@ -1,0 +1,17 @@
+*.cmo
+*.cmi
+*.cmt
+*.cmti
+*.annot
+*.cma
+*.cmx
+*.cmxa
+
+*.a
+*.o
+*.exe
+*.so
+
+*.omc
+
+/build/
