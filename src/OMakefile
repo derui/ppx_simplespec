@@ -44,6 +44,9 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
+	camlp4.extend
+	camlp4.quotations.o
+	camlp4.lib
 #    pack1
 #    pack2
 #
@@ -56,6 +59,8 @@ if $(not $(OCAMLFIND_EXISTS))
 # Include path
 #
 OCAMLINCLUDES += 
+
+OCAMLFINDFLAGS = -syntax camlp4o
 
 #
 # Compile native or byte code?
@@ -80,11 +85,16 @@ OCAMLFLAGS    += -annot -bin-annot
 # Build an OCaml library
 #
 
-FILES[] = $(removesuffix $(ls *ml))
+FILES[] =
+	pa_spec
+	spec
 #    file1
 #    file2
 #
-LIB=pa_simplespec
+LIB = pa_simplespec
 #
+MyOCamlPackage($(LIB), $(FILES), $(EMPTY), $(EMPTY), false)
 
-.DEFAULT: $(MyOCamlLibrary $(LIB), $(FILES))
+lib: $(OCamlPackageGeneratedFiles $(LIB), false)
+
+.DEFAULT: lib
