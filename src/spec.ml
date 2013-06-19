@@ -1,4 +1,5 @@
 type spec_result = Successful | Failure of string * string * string
+                   | Error of string
 
 module Example = struct
 
@@ -41,6 +42,15 @@ module Example = struct
       e.expectations <- Failure (ope_str, result_str, expect_str) :: e.expectations;
       current_example := Some e
   ;;
+
+  let add_error str =
+    match !current_example with
+    | None -> failwith "not set to current example"
+    | Some e ->
+      e.expectations <- Error str :: e.expectations;
+      current_example := Some e
+  ;;
+
 end
 
 module Spec = struct
@@ -63,18 +73,13 @@ module Spec = struct
      spec_id = get_spec_id ()
     }
 
-  (* let run_spec (specs: t list) = *)
-  (*   {specs with result = List.fold_left (fun res spec -> *)
-  (*     let running = List.map (fun e -> e ()) spec.expects in *)
-  (*     if List.for_all (fun x -> id (fst x)) running then *)
-  (*       Successful :: res *)
-  (*     else *)
-  (*       Failure (List.map snd (List.filter (fun x -> not (fst x)) running)) :: res *)
-  (*    ) [] *)
-  (*   } *)
+  let run_spec (spec, spec_body) =
+    spec_body ();
+    spec
+  ;;
 
-  let start spec = Stack.push spec_stack spec
-  let remove_spec spec = Stack.pop spec_stack
+  let start_spec spec = Stack.push spec spec_stack
+  let end_spec spec = Stack.pop spec_stack
 
   let add_example e =
     let spec = Stack.top spec_stack in
@@ -89,11 +94,11 @@ module Spec = struct
     Example.start_example e;
   ;;
 
-  let remove_example e = Example.end_example e
-  ;;
-
+  let new_example = Example.new_example
+  let end_example = Example.end_example
   let add_successful_expectation = Example.add_successful_expectation
   let add_failure_expectation = Example.add_failure_expectation
+  let add_error = Example.add_error
 
 end
 
