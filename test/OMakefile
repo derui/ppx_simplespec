@@ -23,7 +23,7 @@
 #
 open MyUtil
 
-.PHONY: lib install clean
+.PHONY: test
 
 ########################################################################
 # Subdirectories.
@@ -44,9 +44,7 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	camlp4.extend
-	camlp4.quotations.o
-	camlp4.lib
+	pa_simplespec
 #    pack1
 #    pack2
 #
@@ -74,9 +72,9 @@ OCAML_LINK_FLAGS +=
 #
 # Various options
 #
-OCAMLFLAGS += -annot -bin-annot
+# OCAMLFLAGS    += -annot -bin-annot
 # OCAMLCFLAGS   +=
-# OCAMLOPTFLAGS += -annot -bin-annot
+# OCAMLOPTFLAGS +=
 # OCAML_LINK_FLAGS +=
 # OCAML_BYTE_LINK_FLAGS +=
 # OCAML_NATIVE_LINK_FLAGS +=
@@ -85,14 +83,6 @@ OCAMLFLAGS += -annot -bin-annot
 # Build an OCaml library
 #
 
-FILES[] =
-	pa_spec
-	spec
-#
-LIB = pa_simplespec
-#
-MyOCamlPackage($(LIB), $(FILES), $(EMPTY), $(EMPTY), true)
+OCamlProgram(test_feature, test_feature)
 
-lib: $(OCamlPackageGeneratedFiles $(LIB), false)
-
-.DEFAULT: lib
+test: test_feature

@@ -30,10 +30,10 @@ let infixop_expectation _loc op res exp =
   <:expr<
   try
     if $op$ $res$ $exp$ then
-      Spec.add_successful_expectation ()
+      Pa_simplespec.Spec.add_successful_expectation ()
     else
-      Spec.add_failure_expectation $str:str_op$ $str:str_res$ $str:str_exp$;
-  with e -> Spec.add_error (Printexc.to_string e)
+      Pa_simplespec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ $str:str_exp$;
+  with e -> Pa_simplespec.Spec.add_error (Printexc.to_string e)
   >>
 ;;
 
@@ -45,10 +45,10 @@ let identifier_expectation _loc op res exp =
   <:expr<
   try
     if $id:op$ $res$ $exp$ then
-      Spec.add_successful_expectation ()
+      Pa_simplespec.Spec.add_successful_expectation ()
     else
-      Spec.add_failure_expectation $str:str_op$ $str:str_res$ $str:str_exp$;
-  with e -> Spec.add_error (Printexc.to_string e)
+      Pa_simplespec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ $str:str_exp$;
+  with e -> Pa_simplespec.Spec.add_error (Printexc.to_string e)
   >>
 ;;
 
@@ -59,10 +59,10 @@ let identifier_expectation_oneof _loc op res =
   <:expr<
   try
     if $id:op$ $res$ then
-      Spec.add_successful_expectation ()
+      Pa_simplespec.Spec.add_successful_expectation ()
     else
-      Spec.add_failure_expectation $str:str_op$ $str:str_res$ "true";
-  with e -> Spec.add_error (Printexc.to_string e)
+      Pa_simplespec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ "true";
+  with e -> Pa_simplespec.Spec.add_error (Printexc.to_string e)
   >>
 ;;
 
@@ -87,10 +87,10 @@ let function_expectation _loc args body res exp =
   <:expr<
   try
     if $v$ then
-      Spec.add_successful_expectation ()
+      Pa_simplespec.Spec.add_successful_expectation ()
     else
-      Spec.add_failure_expectation $str:str_fun$ $str:str_res$ $str_exp$;
-  with e -> Spec.add_error (Printexc.to_string e)
+      Pa_simplespec.Spec.add_failure_expectation $str:str_fun$ $str:str_res$ $str_exp$;
+  with e -> Pa_simplespec.Spec.add_error (Printexc.to_string e)
   >>
 ;;
 
@@ -101,10 +101,10 @@ let function_expectation_oneof _loc op res =
   <:expr<
   try
     if $op$ $res$ then
-      Spec.add_successful_expectation ()
+      Pa_simplespec.Spec.add_successful_expectation ()
     else
-      Spec.add_failure_expectation $str:str_op$ $str:str_res$ "true";
-  with e -> Spec.add_error (Printexc.to_string e)
+      Pa_simplespec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ "true";
+  with e -> Pa_simplespec.Spec.add_error (Printexc.to_string e)
   >>
 ;;
 
@@ -114,10 +114,10 @@ let infixop_expectation_with_string _loc op res exp =
   <:expr<
   try
     if $op$ $str:res$ $str:exp$ then
-      Spec.add_successful_expectation ()
+      Pa_simplespec.Spec.add_successful_expectation ()
     else
-      Spec.add_failure_expectation $str:str_op$ $str:res$ $str:exp$;
-  with e -> Spec.add_error (Printexc.to_string e)
+      Pa_simplespec.Spec.add_failure_expectation $str:str_op$ $str:res$ $str:exp$;
+  with e -> Pa_simplespec.Spec.add_error (Printexc.to_string e)
   >>
 ;;
 
@@ -125,13 +125,13 @@ let infixop_expectation_with_string _loc op res exp =
 (* itブロックの中身をexampleとして実行する  *)
 let to_example_block _loc desc seq =
   <:expr<
-  let example = Spec.new_example $str:desc$ in
+  let example = Pa_simplespec.Spec.new_example $str:desc$ in
   begin
-    Spec.add_example example;
+    Pa_simplespec.Spec.add_example example;
  
-    Spec.start_example example;
+    Pa_simplespec.Spec.start_example example;
     $Ast.exSem_of_list seq$;
-    Spec.end_example example;
+    Pa_simplespec.Spec.end_example example;
   end
  >>
 ;;
@@ -139,19 +139,19 @@ let to_example_block _loc desc seq =
 (* 空のitブロックの中身を登録する *)
 let to_pending_example_block _loc desc =
   <:expr<
-  let example = Spec.new_example $str:desc$ in
-  Spec.add_example example
+  let example = Pa_simplespec.Spec.new_example $str:desc$ in
+  Pa_simplespec.Spec.add_example example
   >>
 ;;
 
 (* describeブロック一つをspecとして作成する  *)
 let to_spec _loc desc (seq : Ast.expr list) =
   <:expr<
-  let spec = Spec.new_spec $str:desc$ in
+  let spec = Pa_simplespec.Spec.new_spec $str:desc$ in
   (spec, (fun () ->
-    Spec.start_spec spec;
+    Pa_simplespec.Spec.start_spec spec;
     $Ast.exSem_of_list seq$;
-    Spec.end_spec spec
+    Pa_simplespec.Spec.end_spec spec
    ))
  >>
 ;;
