@@ -83,6 +83,4 @@ OCAML_LINK_FLAGS +=
 # Build an OCaml library
 #
 
-OCamlProgram(test_feature, test_feature)
-
-test: test_feature
+test: $(OCamlProgram test_feature, test_feature)
