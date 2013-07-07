@@ -1,0 +1,7 @@
+version = "0.0.1"
+description = "Simple specification unit test tool inspired OSpec"
+requires = "camlp4"
+archive(syntax, preprocessor) = "pa_simplespec.cma"
+archive(syntax, toploop) = "pa_simplespec.cma"
+exists_if = "pa_simplespec.cma"
+

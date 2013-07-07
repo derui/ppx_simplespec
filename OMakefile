@@ -28,7 +28,7 @@ BYTE_ENABLED = true
 INSTALLED = $(BIG_ROOT)/installed
 
 .PHONY: all install clean 
-.SUBDIRS: src
+.SUBDIRS: src test
 
 ########################################################################
 # Subdirectories.
@@ -37,3 +37,4 @@ INSTALLED = $(BIG_ROOT)/installed
 #
 
 LIB = pa_simplespec
+
