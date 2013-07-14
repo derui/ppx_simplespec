@@ -1,6 +1,10 @@
-type spec_result = Successful | Failure of string * string * string
+type spec_result = Successful
+                   | Failure of string * string * string
                    | Error of string
 
+(* Spec内における、一つのitに対応するモジュール
+   内部には、内部には、それぞれのit内における各shouldの結果を格納している。
+*)
 module Example = struct
 
   type t = {
@@ -53,6 +57,9 @@ module Example = struct
 
 end
 
+(* 各describeに対応する型を提供する
+   内部には、それぞれのitに対応するExampleのリストを保持している。
+*)
 module Spec = struct
   type t = {
     description : string;
@@ -101,6 +108,3 @@ module Spec = struct
   let add_error = Example.add_error
 
 end
-
-(* Specモジュールの中身はそのまま展開される *)
-include Spec

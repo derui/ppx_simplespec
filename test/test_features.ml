@@ -17,6 +17,16 @@ let spec =
     end
   end
 
+module F = struct
+  let format_success = ""
+  let format_failure op res expect =
+    Printf.sprintf "  %s %s %s\n" op res expect
+  let format_error e = Printf.sprintf "  error raised : %s\n" e
+end
+
+module Fmt = Simplespec.Format.Make(F)
+
 let () =
-  ignore (Spec.run_spec spec);
+  let s = (Simplespec.Spec.run_spec spec) in
+  List.iter print_string (Simplespec.SpecFormat.format s)
 ;;

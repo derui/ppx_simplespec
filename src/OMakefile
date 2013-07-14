@@ -47,8 +47,6 @@ OCAMLPACKS[] =
 	camlp4.extend
 	camlp4.quotations.o
 	camlp4.lib
-#    pack1
-#    pack2
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -86,13 +84,22 @@ OCAMLFLAGS += -annot -bin-annot
 #
 
 FILES[] =
-	pa_spec
 	spec
+	format
 #
-LIB = pa_simplespec
+PACKAGE = simplespec
+LIB = pa_spec
 #
-MyOCamlPackage($(LIB), $(FILES), $(EMPTY), $(EMPTY), true)
+# pa_spec以外をパッケージにする
+MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
+MyOCamlLibrary($(LIB), pa_spec)
 
-lib: $(OCamlPackageGeneratedFiles $(LIB), false)
+lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary $(LIB), pa_spec)
+
+INSTALL_FILES[] =
+INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
+INSTALL_FILES += $(OCamlLibrary $(LIB), pa_spec)
+
+OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
 
 .DEFAULT: lib

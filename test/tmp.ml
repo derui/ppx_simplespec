@@ -58,6 +58,6 @@ let spec =
              Spec.end_example example));
          Spec.end_spec spec)))
   
-let () = ignore (Spec.run_spec spec)
+let () = ignore (Pa_simplespec.Spec.run_spec spec)
   
 

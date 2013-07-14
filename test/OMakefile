@@ -23,7 +23,7 @@
 #
 open MyUtil
 
-.PHONY: test
+.PHONY: test run
 
 ########################################################################
 # Subdirectories.
@@ -44,7 +44,7 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	pa_simplespec
+	simplespec
 #    pack1
 #    pack2
 #
@@ -72,7 +72,7 @@ OCAML_LINK_FLAGS +=
 #
 # Various options
 #
-# OCAMLFLAGS    += -annot -bin-annot
+OCAMLFLAGS    += -verbose
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS +=
 # OCAML_LINK_FLAGS +=
@@ -82,5 +82,9 @@ OCAML_LINK_FLAGS +=
 ################################################
 # Build an OCaml library
 #
+EXEC=test_features
 
-test: $(OCamlProgram test_feature, test_feature)
+test: $(OCamlProgram test_features, test_features)
+
+run: $(EXEC)
+	./test_features
