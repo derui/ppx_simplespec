@@ -21,12 +21,12 @@ module F = struct
   let format_success = ""
   let format_failure op res expect =
     Printf.sprintf "  %s %s %s\n" op res expect
-  let format_error e = Printf.sprintf "  error raised : %s\n" e
+  let format_error e = Printf.sprintf "  \x1b[17merror raised : %s\n" e
 end
 
-module Fmt = Simplespec.Format.Make(F)
+module Fmt = Simplespec.SpecFormat.Make(F)
 
 let () =
-  let s = (Simplespec.Spec.run_spec spec) in
-  List.iter print_string (Simplespec.SpecFormat.format s)
+  let s = (Simplespec.Spec.Spec.run_spec spec) in
+  List.iter print_string (Fmt.format s)
 ;;
