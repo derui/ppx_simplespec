@@ -17,16 +17,9 @@ let spec =
     end
   end
 
-module F = struct
-  let format_success = ""
-  let format_failure op res expect =
-    Printf.sprintf "  %s %s %s\n" op res expect
-  let format_error e = Printf.sprintf "  \x1b[17merror raised : %s\n" e
-end
-
-module Fmt = Simplespec.SpecFormat.Make(F)
+module Fmt = Simplespec.SpecFormat.Text
 
 let () =
   let s = (Simplespec.Spec.Spec.run_spec spec) in
-  List.iter print_string (Fmt.format s)
+  Fmt.format Format.std_formatter s
 ;;
