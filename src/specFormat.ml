@@ -1,49 +1,51 @@
 
-type success_formatter = string
-type failure_formatter = string -> string -> string -> string
-type error_formatter = string -> string
 
 (* expectationのそれぞれの値について、文字列への変換を行う *)
 module type Formatter = sig
-  val format_success : success_formatter
-  val format_failure : failure_formatter
-  val format_error : error_formatter
+  val spec_format : Format.formatter -> Spec.Spec.t -> unit
 end
 
 module type S = sig
-  type t = Spec.spec_result
 
-  (* formatting Spec.t to string list per elements are as line. *)
-  val format : Spec.Spec.t -> string list
+  val format : Format.formatter -> Spec.Spec.t -> unit
 
 end
 
 module Make(F:Formatter) : S = struct
-  let is_success = function
-    | Spec.Successful -> true
-    | _ -> false
-  ;;
-
-  let example_format example =
-    let open Spec in
-    let descr = Example.description example
-    and expectations = Example.expectations example in
-    let count = List.length expectations in
-    let successes = List.filter is_success expectations in
-    let default_output = [ Printf.sprintf "  %s [%d/%d]\n" succecsses count] in
-    let failures = List.filter (fun e -> not (is_success e)) expectations in
-    List.rev (List.fold_right (fun e el ->
-      let str = match e with
-        | Failure (op, expect, active) -> F.format_failure op expect active
-        | Error err -> F.format_error err in
-      str :: el
-    ) failures default_output)
-  ;;
-
-  let format spec =
-    let open Spec in
-    let descr = Spec.description spec
-    and examples = Spec.examples spec in
-    let descr_output = Printf.sprintf "%s\n" in
-    descr_output :: (List.flatten (List.map example_format examples))
+  let format = F.spec_format
 end
+
+module Formatters = struct
+
+  module Text = struct
+    let spec_format fmt spec =
+
+      let is_success = function
+        | Spec.Successful -> true
+        | _ -> false in
+
+      let example_format fmt examples =
+        let open Spec in
+        let inner_example_format fmt example = 
+          let descr = example.Example.description
+          and expectations = example.Example.expectations in
+          let count = List.length expectations in
+          let successes = List.filter is_success expectations in
+          let failures = List.filter (fun e -> not (is_success e)) expectations in
+          Format.fprintf fmt "%s [%d/%d]@\n" descr (List.length successes) count;
+          List.iter (function
+          | Successful -> ()
+          | Failure (op, expect, active) -> Format.fprintf fmt "%s@ %s@ %s@\n" expect op active
+          | Error err -> Format.fprintf fmt "Error@ :@ %s@\n" err
+          ) failures in
+        List.iter (inner_example_format fmt) examples in
+
+      let open Spec in
+      let descr = spec.Spec.description
+      and examples = spec.Spec.examples in
+      Format.fprintf fmt "@[<2>%s@\n%a@]@." descr example_format examples;
+  end
+
+end
+
+module Text = Make(Formatters.Text)

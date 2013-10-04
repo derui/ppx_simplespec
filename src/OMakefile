@@ -85,7 +85,7 @@ OCAMLFLAGS += -annot -bin-annot
 
 FILES[] =
 	spec
-	format
+	specFormat
 #
 PACKAGE = simplespec
 LIB = pa_spec
