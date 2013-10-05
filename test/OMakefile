@@ -84,7 +84,7 @@ OCAMLFLAGS    += -verbose
 #
 EXEC=test_features
 
-test: $(OCamlProgram test_features, test_features)
+test: $(OCamlProgram $(EXEC), test_features)
 
 run: $(EXEC)
-	./test_features
+	./$(EXEC)

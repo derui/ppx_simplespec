@@ -37,4 +37,3 @@ INSTALLED = $(BIG_ROOT)/installed
 #
 
 LIB = pa_simplespec
-
