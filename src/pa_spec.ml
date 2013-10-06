@@ -128,10 +128,12 @@ let to_example_block _loc desc seq =
   let example = Simplespec.Spec.Example.new_example $str:desc$ in
   begin
     Simplespec.Spec.Spec.add_example example;
- 
+
+    Simplespec.Spec.Spec.run_each_preparations ();
     Simplespec.Spec.Spec.start_example example;
     $Ast.exSem_of_list seq$;
     Simplespec.Spec.Spec.end_example example;
+    Simplespec.Spec.Spec.run_each_post_processes ();
   end
  >>
 ;;
@@ -150,12 +152,46 @@ let to_spec _loc desc (seq : Ast.expr list) =
   let spec = Simplespec.Spec.Spec.new_spec $str:desc$ in
   (spec, (fun () ->
     Simplespec.Spec.Spec.start_spec spec;
+    Simplespec.Spec.Spec.run_all_preparations spec;
     $Ast.exSem_of_list seq$;
+    Simplespec.Spec.Spec.run_all_post_processes spec;
     Simplespec.Spec.Spec.end_spec spec
    ))
  >>
 ;;
-  
+
+let before_all_block _loc (seq : Ast.expr list) =
+  <:expr<
+  Simplespec.Spec.Spec.add_preparation spec (fun () ->
+    $Ast.exSem_of_list seq$
+  )
+>>
+;;
+
+let after_all_block _loc (seq : Ast.expr list) =
+  <:expr<
+  Simplespec.Spec.Spec.add_post_process spec (fun () ->
+    $Ast.exSem_of_list seq$
+  )
+>>
+;;
+
+let before_each_block _loc (seq : Ast.expr list) =
+  <:expr<
+  Simplespec.Spec.Spec.add_preparation_for_each spec (fun () ->
+    $Ast.exSem_of_list seq$
+  )
+>>
+;;
+
+let after_each_block _loc (seq : Ast.expr list) =
+  <:expr<
+  Simplespec.Spec.Spec.add_post_process_for_each spec (fun () ->
+    $Ast.exSem_of_list seq$
+  )
+>>
+;;
+
 EXTEND Gram
   expr: LEVEL "simple" [
     [ "describe"; des = STRING ; "begin" ; seq = LIST0 expr; "end" -> to_spec _loc des seq
@@ -175,7 +211,11 @@ EXTEND Gram
       identifier_expectation_oneof _loc f res
     (* 関数定義 *)
     | res = SELF ; "should" ; OPT "be" ; "(" ; "fun" ; args = LIST1 ipatt; "->" ;
-      e = expr ; ")" ; exp = OPT expr LEVEL "top" -> function_expectation _loc args e res exp 
+      e = expr ; ")" ; exp = OPT expr LEVEL "top" -> function_expectation _loc args e res exp;
+    | "before"; "all" ; "begin" ; seq = LIST0 expr; "end" -> before_all_block _loc seq;
+    | "before"; "each"; "begin"; seq = LIST0 expr; "end" -> before_each_block _loc seq;
+    | "after"; "all"; "begin"; seq = LIST0 expr; "end" -> after_all_block _loc seq;
+    | "after"; "each"; "begin"; seq = LIST0 expr; "end" -> after_each_block _loc seq;
     ]
   ];
 END

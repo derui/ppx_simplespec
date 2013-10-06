@@ -17,9 +17,41 @@ let spec =
     end
   end
 
+
+let spec2 =
+  let r = ref 1 in
+  describe "Preparation and post-process" begin
+    before each begin
+      r := succ !r
+    end;
+
+    after each begin
+      r := 1
+    end;
+
+    it "should run each spec that in on before and after" begin
+      2 should = !r
+    end;
+  end
+
+let spec3 =
+  let r = ref 1 in
+  describe "Preparation and post-process" begin
+    before all begin
+      r := succ !r
+    end;
+
+    it "should run once before at first describe" begin
+      2 should = !r
+    end;
+  end
+
 module Fmt = Simplespec.SpecFormat.Text
 
 let () =
   let s = (Simplespec.Spec.Spec.run_spec spec) in
+  Fmt.format Format.std_formatter s;
+  let s = (Simplespec.Spec.Spec.run_spec spec2) in
+  Fmt.format Format.std_formatter s;
+  let s = (Simplespec.Spec.Spec.run_spec spec3) in
   Fmt.format Format.std_formatter s
-;;
