@@ -61,10 +61,15 @@ end
    内部には、それぞれのitに対応するExampleのリストを保持している。
 *)
 module Spec = struct
+  type process = unit -> unit
   type t = {
     description : string;
     mutable examples : Example.t list;
     spec_id : int;
+    all_preparations : process Queue.t;
+    each_preparations : process Queue.t;
+    all_post_processes : process Queue.t;
+    each_post_processes : process Queue.t;
   }
 
   let spec_stack = Stack.create ()
@@ -77,7 +82,11 @@ module Spec = struct
 
   let new_spec (desc: string) =
     {description = desc; examples = [];
-     spec_id = get_spec_id ()
+     spec_id = get_spec_id ();
+     all_preparations = Queue.create ();
+     all_post_processes = Queue.create ();
+     each_preparations = Queue.create ();
+     each_post_processes = Queue.create ();
     }
 
   let run_spec (spec, spec_body) =
@@ -107,4 +116,22 @@ module Spec = struct
   let add_failure_expectation = Example.add_failure_expectation
   let add_error = Example.add_error
 
+  let add_preparation spec f = Queue.add f spec.all_preparations
+  let add_preparation_for_each spec f = Queue.add f spec.each_preparations
+  let add_post_process spec f = Queue.add f spec.all_post_processes
+  let add_post_process_for_each spec f = Queue.add f spec.each_post_processes
+
+  let run_each_preparations () = 
+    let spec = Stack.top spec_stack in
+    Queue.iter (fun f -> f()) spec.each_preparations
+
+  let run_each_post_processes () =
+    let spec = Stack.top spec_stack in
+    Queue.iter (fun f -> f ()) spec.each_post_processes
+
+  let run_all_preparations spec = 
+    Queue.iter (fun f -> f()) spec.all_preparations
+
+  let run_all_post_processes spec =
+    Queue.iter (fun f -> f ()) spec.all_post_processes
 end
