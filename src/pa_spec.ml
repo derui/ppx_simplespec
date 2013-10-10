@@ -1,7 +1,7 @@
 open Camlp4.PreCast
 open Syntax
 
-(* These functions are taken from OSpec source (include comment follow) *)
+(* These functions are taken from OSpec source (include comment as follows) *)
 (*
  * The string_of_* functions are taken from
  * http://caml.inria.fr/pub/ml-archives/caml-list/2008/08/a6c9c42fbb20ce51984d26cc54b61c30.en.html
