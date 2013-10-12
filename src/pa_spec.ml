@@ -30,10 +30,10 @@ let infixop_expectation _loc op res exp =
   <:expr<
   try
     if $op$ $res$ $exp$ then
-      Simplespec.Spec.Spec.add_successful_expectation ()
+      Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ $str:str_exp$;
-  with e -> Simplespec.Spec.Spec.add_error (Printexc.to_string e)
+      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:str_res$ $str:str_exp$;
+  with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
 
@@ -45,10 +45,10 @@ let identifier_expectation _loc op res exp =
   <:expr<
   try
     if $id:op$ $res$ $exp$ then
-      Simplespec.Spec.Spec.add_successful_expectation ()
+      Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ $str:str_exp$;
-  with e -> Simplespec.Spec.Spec.add_error (Printexc.to_string e)
+      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:str_res$ $str:str_exp$;
+  with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
 
@@ -59,10 +59,10 @@ let identifier_expectation_oneof _loc op res =
   <:expr<
   try
     if $id:op$ $res$ then
-      Simplespec.Spec.Spec.add_successful_expectation ()
+      Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ "true";
-  with e -> Simplespec.Spec.Spec.add_error (Printexc.to_string e)
+      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:str_res$ "true";
+  with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
 
@@ -87,10 +87,10 @@ let function_expectation _loc args body res exp =
   <:expr<
   try
     if $v$ then
-      Simplespec.Spec.Spec.add_successful_expectation ()
+      Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.Spec.add_failure_expectation $str:str_fun$ $str:str_res$ $str_exp$;
-  with e -> Simplespec.Spec.Spec.add_error (Printexc.to_string e)
+      Simplespec.Spec.add_failure_expectation example $str:str_fun$ $str:str_res$ $str_exp$;
+  with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
 
@@ -101,10 +101,10 @@ let function_expectation_oneof _loc op res =
   <:expr<
   try
     if $op$ $res$ then
-      Simplespec.Spec.Spec.add_successful_expectation ()
+      Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.Spec.add_failure_expectation $str:str_op$ $str:str_res$ "true";
-  with e -> Simplespec.Spec.Spec.add_error (Printexc.to_string e)
+      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:str_res$ "true";
+  with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
 
@@ -114,10 +114,10 @@ let infixop_expectation_with_string _loc op res exp =
   <:expr<
   try
     if $op$ $str:res$ $str:exp$ then
-      Simplespec.Spec.Spec.add_successful_expectation ()
+      Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.Spec.add_failure_expectation $str:str_op$ $str:res$ $str:exp$;
-  with e -> Simplespec.Spec.Spec.add_error (Printexc.to_string e)
+      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:res$ $str:exp$;
+  with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
 
@@ -125,44 +125,35 @@ let infixop_expectation_with_string _loc op res exp =
 (* itブロックの中身をexampleとして実行する  *)
 let to_example_block _loc desc seq =
   <:expr<
-  let example = Simplespec.Spec.Example.new_example $str:desc$ in
-  begin
-    Simplespec.Spec.Spec.add_example example;
-
-    Simplespec.Spec.Spec.run_each_preparations ();
-    Simplespec.Spec.Spec.start_example example;
-    $Ast.exSem_of_list seq$;
-    Simplespec.Spec.Spec.end_example example;
-    Simplespec.Spec.Spec.run_each_post_processes ();
-  end
- >>
+  let example = Simplespec.Spec.new_example $str:desc$ (fun example -> 
+    $Ast.exSem_of_list seq$
+  ) in
+  Simplespec.Spec.add_example spec example
+  >>
 ;;
 
 (* 空のitブロックの中身を登録する *)
 let to_pending_example_block _loc desc =
   <:expr<
-  let example = Simplespec.Spec.Example.new_example $str:desc$ in
-  Simplespec.Spec.Spec.add_example example
+  let example = Simplespec.Spec.new_example $str:desc$ in
+  Simplespec.Spec.add_example spec example
   >>
 ;;
 
 (* describeブロック一つをspecとして作成する  *)
 let to_spec _loc desc (seq : Ast.expr list) =
   <:expr<
-  let spec = Simplespec.Spec.Spec.new_spec $str:desc$ in
-  (spec, (fun () ->
-    Simplespec.Spec.Spec.start_spec spec;
-    Simplespec.Spec.Spec.run_all_preparations spec;
-    $Ast.exSem_of_list seq$;
-    Simplespec.Spec.Spec.run_all_post_processes spec;
-    Simplespec.Spec.Spec.end_spec spec
-   ))
- >>
+  Simplespec.Spec.new_spec $str:desc$ (fun () -> 
+    Simplespec.Spec.with_spec spec (fun spec -> 
+      $Ast.exSem_of_list seq$;
+    )
+  )
+  >>
 ;;
 
 let before_all_block _loc (seq : Ast.expr list) =
   <:expr<
-  Simplespec.Spec.Spec.add_preparation spec (fun () ->
+  Simplespec.Spec.add_preparation spec (fun () ->
     $Ast.exSem_of_list seq$
   )
 >>
@@ -170,7 +161,7 @@ let before_all_block _loc (seq : Ast.expr list) =
 
 let after_all_block _loc (seq : Ast.expr list) =
   <:expr<
-  Simplespec.Spec.Spec.add_post_process spec (fun () ->
+  Simplespec.Spec.add_post_process spec (fun () ->
     $Ast.exSem_of_list seq$
   )
 >>
@@ -178,7 +169,7 @@ let after_all_block _loc (seq : Ast.expr list) =
 
 let before_each_block _loc (seq : Ast.expr list) =
   <:expr<
-  Simplespec.Spec.Spec.add_preparation_for_each spec (fun () ->
+  Simplespec.Spec.add_preparation_for_each spec (fun () ->
     $Ast.exSem_of_list seq$
   )
 >>
@@ -186,7 +177,7 @@ let before_each_block _loc (seq : Ast.expr list) =
 
 let after_each_block _loc (seq : Ast.expr list) =
   <:expr<
-  Simplespec.Spec.Spec.add_post_process_for_each spec (fun () ->
+  Simplespec.Spec.add_post_process_for_each spec (fun () ->
     $Ast.exSem_of_list seq$
   )
 >>
