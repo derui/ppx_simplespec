@@ -1,7 +1,7 @@
 
 let spec =
   describe "The number one" begin
-    it "shoud to be implement late";
+    it "shoud to be implement late" pending;
     it "should equal 2 when added to itself" begin
       (1 + 1) should = 2;
       let eq = (=) in
@@ -35,23 +35,29 @@ let spec2 =
   end
 
 let spec3 =
-  let r = ref 1 in
   describe "Preparation and post-process" begin
     before all begin
-      r := succ !r
+      let ch = open_out "tmp.txt" in
+      output_string ch  "hoge";
+      close_out ch
+    end;
+    print_string "hoge";
+
+    after all begin
+      Sys.remove "tmp.txt"
     end;
 
     it "should run once before at first describe" begin
-      2 should = !r
+      (Sys.file_exists "tmp.txt") should = true
     end;
   end
 
 module Fmt = Simplespec.SpecFormat.Text
 
 let () =
-  let s = (Simplespec.Spec.Spec.run_spec spec) in
+  let s = (Simplespec.Spec.run_spec spec) in
   Fmt.format Format.std_formatter s;
-  let s = (Simplespec.Spec.Spec.run_spec spec2) in
+  let s = (Simplespec.Spec.run_spec spec2) in
   Fmt.format Format.std_formatter s;
-  let s = (Simplespec.Spec.Spec.run_spec spec3) in
+  let s = (Simplespec.Spec.run_spec spec3) in
   Fmt.format Format.std_formatter s

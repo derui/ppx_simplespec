@@ -72,7 +72,7 @@ OCAML_LINK_FLAGS +=
 #
 # Various options
 #
-OCAMLFLAGS    += -verbose
+OCAMLFLAGS    += 
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS +=
 # OCAML_LINK_FLAGS +=
@@ -84,7 +84,7 @@ OCAMLFLAGS    += -verbose
 #
 EXEC=test_features
 
-test: $(OCamlProgram $(EXEC), test_features)
+test: $(OCamlProgram $(EXEC), test_features) ../src/pa_spec.cmo ../src/simplespec.cmo
 
-run: $(EXEC)
+run: test
 	./$(EXEC)

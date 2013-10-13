@@ -16,7 +16,7 @@ module Example = struct
 
   let get_id =
     let example_counter = ref 0 in
-    fun () -> 
+    fun () ->
       let new_count = succ !example_counter in
       example_counter := new_count;
       new_count
@@ -59,7 +59,7 @@ module Spec = struct
     each_post_processes : process Queue.t;
   }
 
-  let spec_stack = Stack.create ()
+  let spec_stack : t Stack.t = Stack.create ()
   let get_spec_id =
     let spec_counter = ref 0 in
     fun () ->
@@ -82,9 +82,7 @@ module Spec = struct
     f spec;
     Stack.pop spec_stack
 
-  let add_example e =
-    let spec = Stack.top spec_stack in
-    spec.examples <- e :: spec.examples
+  let add_example spec e = spec.examples <- e :: spec.examples
 
   let new_example = Example.new_example
   let add_successful_expectation = Example.add_successful_expectation
@@ -96,13 +94,13 @@ module Spec = struct
   let add_post_process spec f = Queue.add f spec.all_post_processes
   let add_post_process_for_each spec f = Queue.add f spec.each_post_processes
 
-  let run_each_preparations spec = 
+  let run_each_preparations spec =
     Queue.iter (fun f -> f()) spec.each_preparations
 
   let run_each_post_processes spec =
     Queue.iter (fun f -> f ()) spec.each_post_processes
 
-  let run_all_preparations spec = 
+  let run_all_preparations spec =
     Queue.iter (fun f -> f()) spec.all_preparations
 
   let run_all_post_processes spec =

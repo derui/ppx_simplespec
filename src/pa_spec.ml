@@ -6,7 +6,6 @@ open Syntax
  * The string_of_* functions are taken from
  * http://caml.inria.fr/pub/ml-archives/caml-list/2008/08/a6c9c42fbb20ce51984d26cc54b61c30.en.html
  *)
-
 let printer =
   let module P = Camlp4.Printers.OCaml.Make(Syntax) in
   new P.printer ()
@@ -125,7 +124,7 @@ let infixop_expectation_with_string _loc op res exp =
 (* itブロックの中身をexampleとして実行する  *)
 let to_example_block _loc desc seq =
   <:expr<
-  let example = Simplespec.Spec.new_example $str:desc$ (fun example -> 
+  let example = Simplespec.Spec.new_example $str:desc$ (fun example ->
     $Ast.exSem_of_list seq$
   ) in
   Simplespec.Spec.add_example spec example
@@ -135,7 +134,7 @@ let to_example_block _loc desc seq =
 (* 空のitブロックの中身を登録する *)
 let to_pending_example_block _loc desc =
   <:expr<
-  let example = Simplespec.Spec.new_example $str:desc$ in
+  let example = Simplespec.Spec.new_example $str:desc$ (fun _ -> ()) in
   Simplespec.Spec.add_example spec example
   >>
 ;;
@@ -143,10 +142,8 @@ let to_pending_example_block _loc desc =
 (* describeブロック一つをspecとして作成する  *)
 let to_spec _loc desc (seq : Ast.expr list) =
   <:expr<
-  Simplespec.Spec.new_spec $str:desc$ (fun () -> 
-    Simplespec.Spec.with_spec spec (fun spec -> 
-      $Ast.exSem_of_list seq$;
-    )
+  Simplespec.Spec.new_spec $str:desc$ (fun spec ->
+    $Ast.exSem_of_list seq$;
   )
   >>
 ;;
@@ -186,8 +183,8 @@ let after_each_block _loc (seq : Ast.expr list) =
 EXTEND Gram
   expr: LEVEL "simple" [
     [ "describe"; des = STRING ; "begin" ; seq = LIST0 expr; "end" -> to_spec _loc des seq
+    | "it" ; des = STRING ; "pending" -> to_pending_example_block _loc des
     | "it" ; des = STRING ; "begin" ; seq = LIST0 expr; "end" -> to_example_block _loc des seq
-    | "it" ; des = STRING -> to_pending_example_block _loc des
     (* 比較演算子と文字列リテラル *)
     | res = STRING ; "should" ; OPT "be" ; op = infixop0; exp = STRING ->
       infixop_expectation_with_string _loc op res exp
@@ -210,4 +207,3 @@ EXTEND Gram
     ]
   ];
 END
-

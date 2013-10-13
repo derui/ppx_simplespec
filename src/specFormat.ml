@@ -2,12 +2,12 @@
 
 (* expectationのそれぞれの値について、文字列への変換を行う *)
 module type Formatter = sig
-  val spec_format : Format.formatter -> Spec.Spec.t -> unit
+  val spec_format : Format.formatter -> Spec.t -> unit
 end
 
 module type S = sig
 
-  val format : Format.formatter -> Spec.Spec.t -> unit
+  val format : Format.formatter -> Spec.t -> unit
 
 end
 
