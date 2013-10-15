@@ -20,7 +20,7 @@ let spec =
 
 let spec2 =
   let r = ref 1 in
-  describe "Preparation and post-process" begin
+  describe "Preparation and post-process each example" begin
     before each begin
       r := succ !r
     end;
@@ -32,6 +32,10 @@ let spec2 =
     it "should run each spec that in on before and after" begin
       2 should = !r
     end;
+
+    it "should run spec that in on before and after in twice" begin
+      2 should = !r
+    end;
   end
 
 let spec3 =
@@ -41,7 +45,6 @@ let spec3 =
       output_string ch  "hoge";
       close_out ch
     end;
-    print_string "hoge";
 
     after all begin
       Sys.remove "tmp.txt"
