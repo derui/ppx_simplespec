@@ -48,6 +48,7 @@ OCAMLPACKS[] =
 	camlp4.quotations.o
 	camlp4.lib
 	compiler-libs.toplevel
+	findlib
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -73,7 +74,7 @@ OCAML_LINK_FLAGS +=
 #
 # Various options
 #
-OCAMLFLAGS += -annot -bin-annot
+OCAMLFLAGS += -g -annot -bin-annot
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS += -annot -bin-annot
 # OCAML_LINK_FLAGS +=
