@@ -28,7 +28,8 @@ module Example = struct
     example_id = get_id ();
   }
 
-  let run_example example = example.body example
+  let run_example example = example.body example;
+    example.expectations <- List.rev example.expectations
 
   let add_successful_expectation example =
     example.expectations <- Successful :: example.expectations
@@ -114,11 +115,11 @@ module Spec = struct
       run_each_preparations spec;
       Example.run_example e;
       run_each_post_processes spec
-    ) spec.examples;
+    ) (List.rev spec.examples);
     run_all_post_processes spec;
     spec
 
-  let run_specs () = List.map (fun spec -> run_spec spec) !specs
+  let run_specs () = List.map (fun spec -> run_spec spec) (List.rev !specs)
 
   let cleanup () = specs := []
 

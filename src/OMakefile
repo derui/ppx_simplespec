@@ -46,7 +46,6 @@ USE_OCAMLFIND = true
 OCAMLPACKS[] =
 	camlp4.extend
 	camlp4.quotations.o
-	camlp4.lib
 	compiler-libs.toplevel
 	findlib
 #
@@ -60,7 +59,7 @@ if $(not $(OCAMLFIND_EXISTS))
 #
 OCAMLINCLUDES += 
 
-OCAMLFINDFLAGS = -syntax camlp4o
+OCAMLFINDFLAGS = -syntax camlp4o 
 
 #
 # Compile native or byte code?
@@ -69,16 +68,14 @@ OCAMLFINDFLAGS = -syntax camlp4o
 #
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = true
-
-OCAML_LINK_FLAGS += 
 #
 # Various options
 #
-OCAMLFLAGS += -g -annot -bin-annot
+OCAMLFLAGS += -g -annot -bin-annot 
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS += -annot -bin-annot
-# OCAML_LINK_FLAGS +=
-# OCAML_BYTE_LINK_FLAGS +=
+OCAML_LINK_FLAGS += -linkall 
+OCAML_BYTE_LINK_FLAGS += -linkall dynlink.cma camlp4o.cma 
 # OCAML_NATIVE_LINK_FLAGS +=
 
 ################################################
@@ -88,24 +85,24 @@ OCAMLFLAGS += -g -annot -bin-annot
 FILES[] =
 	spec
 	specFormat
+	pa_spec
+	run_simplespec
 #
 PACKAGE = simplespec
-LIB = pa_spec
 #
 # pa_spec以外をパッケージにする
 MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
 MyOCamlLibrary($(LIB), pa_spec)
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary $(LIB), pa_spec)
+lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) pa_spec.cmo
 
 SIMPLESPEC_FILES[] =
-	run_simplespec
+	simplespec
 
-spec: $(OCamlProgramOnlyByte simplespec, $(SIMPLESPEC_FILES))
+spec: $(OCamlProgramOnlyByte simplespec, $(FILES))
 
-INSTALL_FILES[] =
+INSTALL_FILES[] = $(array $(addsuffix .cmo, $(FILES)))
 INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
-INSTALL_FILES += $(OCamlLibrary $(LIB), pa_spec)
 
 OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
 

@@ -40,6 +40,6 @@ let () =
   Toploop.initialize_toplevel_env ();
 
   let format, files = parse_argv () in
-  load_object_files ["spec.cmo"; "specFormat.cmo"];
+  load_object_files [];
 
   run_files format files
