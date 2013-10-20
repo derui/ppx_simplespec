@@ -92,16 +92,15 @@ PACKAGE = simplespec
 #
 # pa_spec以外をパッケージにする
 MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
-MyOCamlLibrary($(LIB), pa_spec)
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) pa_spec.cmo
+lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false)
 
 SIMPLESPEC_FILES[] =
 	simplespec
 
 spec: $(OCamlProgramOnlyByte simplespec, $(FILES))
 
-INSTALL_FILES[] = $(array $(addsuffix .cmo, $(FILES)))
+INSTALL_FILES[] =$(addsuffix .cmo, $(FILES))
 INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
 
 OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
