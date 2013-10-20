@@ -28,7 +28,8 @@ module Example = struct
     example_id = get_id ();
   }
 
-  let run_example example = example.body example
+  let run_example example = example.body example;
+    example.expectations <- List.rev example.expectations
 
   let add_successful_expectation example =
     example.expectations <- Successful :: example.expectations
@@ -59,7 +60,8 @@ module Spec = struct
     each_post_processes : process Queue.t;
   }
 
-  let spec_stack : t Stack.t = Stack.create ()
+  let specs = ref []
+
   let get_spec_id =
     let spec_counter = ref 0 in
     fun () ->
@@ -68,19 +70,19 @@ module Spec = struct
       new_count
 
   let new_spec (desc: string) body =
-    {description = desc; examples = [];
-     spec_id = get_spec_id ();
-     all_preparations = Queue.create ();
-     all_post_processes = Queue.create ();
-     each_preparations = Queue.create ();
-     each_post_processes = Queue.create ();
-     make_examples = body;
-    }
+    let spec = {description = desc; examples = [];
+                spec_id = get_spec_id ();
+                all_preparations = Queue.create ();
+                all_post_processes = Queue.create ();
+                each_preparations = Queue.create ();
+                each_post_processes = Queue.create ();
+                make_examples = body;
+               }
+    in
+    specs := spec :: !specs;
+    spec
 
-  let with_spec spec f =
-    Stack.push spec spec_stack ;
-    f spec;
-    Stack.pop spec_stack
+  let with_spec spec f = f spec
 
   let add_example spec e = spec.examples <- e :: spec.examples
 
@@ -113,9 +115,13 @@ module Spec = struct
       run_each_preparations spec;
       Example.run_example e;
       run_each_post_processes spec
-    ) spec.examples;
+    ) (List.rev spec.examples);
     run_all_post_processes spec;
     spec
+
+  let run_specs () = List.map (fun spec -> run_spec spec) (List.rev !specs)
+
+  let cleanup () = specs := []
 
 end
 
