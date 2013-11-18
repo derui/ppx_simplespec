@@ -32,12 +32,14 @@ module Formatters = struct
           let count = List.length expectations in
           let successes = List.filter is_success expectations in
           let failures = List.filter (fun e -> not (is_success e)) expectations in
-          Format.fprintf fmt "%s [%d/%d]@\n" descr (List.length successes) count;
+          Format.fprintf fmt "@[<h 2>%s [%d/%d]@\n" descr (List.length successes) count;
           List.iter (function
           | Successful -> ()
-          | Failure (op, expect, active) -> Format.fprintf fmt "%s@ %s@ %s@\n" expect op active
-          | Error err -> Format.fprintf fmt "Error@ :@ %s@\n" err
-          ) failures in
+          | Failure (op, expect, active) -> Format.fprintf fmt "Failure : %s %s %s@\n" expect op active
+          | Error err -> Format.fprintf fmt "Error : %s@\n" err
+          ) failures;
+          Format.fprintf fmt "@]@\n"
+        in
         List.iter (inner_example_format fmt) examples in
 
       let open Spec in

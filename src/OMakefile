@@ -48,6 +48,7 @@ OCAMLPACKS[] =
 	camlp4.quotations.o
 	compiler-libs.toplevel
 	findlib
+	str
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -86,7 +87,6 @@ FILES[] =
 	spec
 	specFormat
 	pa_spec
-	run_simplespec
 #
 PACKAGE = simplespec
 #
@@ -95,10 +95,7 @@ MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
 
 lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false)
 
-SIMPLESPEC_FILES[] =
-	simplespec
-
-spec: $(OCamlProgramOnlyByte simplespec, $(FILES))
+spec: $(OCamlProgramOnlyByte simplespec, run_simplespec)
 
 INSTALL_FILES[] =$(addsuffix .cmo, $(FILES))
 INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 

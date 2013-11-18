@@ -35,6 +35,9 @@ module Example = struct
     example.expectations <- Successful :: example.expectations
 
   let add_failure_expectation example ope_str result_str expect_str =
+    let regexp = Str.regexp "[ \t\r\n]" in
+    let result_str = Str.global_replace regexp "" result_str
+    and expect_str = Str.global_replace regexp "" expect_str in
     example.expectations <- Failure (ope_str, result_str, expect_str) :: example.expectations
 
   let add_error example str =
