@@ -58,7 +58,7 @@ if $(not $(OCAMLFIND_EXISTS))
 #
 OCAMLINCLUDES += 
 
-OCAMLFINDFLAGS = -syntax camlp4o
+OCAMLFINDFLAGS = -syntax pa_spec
 
 #
 # Compile native or byte code?
@@ -84,7 +84,8 @@ OCAMLFLAGS    +=
 #
 EXEC=test_features
 
-test: $(OCamlProgram $(EXEC), test_features) ../src/pa_spec.cmo ../src/simplespec.cmo
+test:
+	../src/simplespec test_features.ml
 
 run: test
 	./$(EXEC)

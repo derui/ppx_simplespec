@@ -51,3 +51,12 @@ describe "Preparation and post-process" begin
     (Sys.file_exists "tmp.txt") should = true
   end;
 end
+;;
+
+describe "Matching with cases" begin
+  it "should be able to match result" begin
+    let s = Some 1 in
+    s should match (Some 0 | Some 1);
+  end;
+end
+;;

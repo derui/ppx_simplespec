@@ -121,6 +121,23 @@ let infixop_expectation_with_string _loc op res exp =
   >>
 ;;
 
+(* 強制的に失敗させる *)
+let force_failure_expectation _loc res =
+  <:expr<
+    Simplespec.Spec.add_failure_expectation example $str:res$ "" "";
+  >>
+;;
+
+let matching_expecation _loc case res =
+  let str_res = string_of_expr res in
+  let str_patt = string_of_patt case in
+  let case = <:match_case< $case$ -> Simplespec.Spec.add_successful_expectation example>> in
+  <:expr<
+  match $res$ with
+  | $case$
+  | _ -> Simplespec.Spec.add_failure_expectation example "match" $str:str_res$ $str:str_patt$
+  >>
+;;
 
 (* itブロックの中身をexampleとして実行する  *)
 let to_example_block _loc desc seq =
@@ -188,19 +205,24 @@ EXTEND Gram
     | "it" ; des = STRING ; "begin" ; seq = LIST0 expr; "end" -> to_example_block _loc des seq
     (* 比較演算子と文字列リテラル *)
     | res = STRING ; "should" ; OPT "be" ; op = infixop0; exp = STRING ->
-      infixop_expectation_with_string _loc op res exp
+    infixop_expectation_with_string _loc op res exp
     (* =や<>などの比較演算子 *)
     | res = SELF ; "should" ; OPT "be" ; op = infixop0; exp = SELF ->
-      infixop_expectation _loc op res exp
+    infixop_expectation _loc op res exp
     (* 定義された2引数の関数 *)
     | res = SELF ; "should" ; OPT "be" ; f = ident; exp = SELF ->
-      identifier_expectation _loc f res exp
+    identifier_expectation _loc f res exp
     (* 定義された1引数の関数 *)
     | res = SELF ; "should" ; OPT "be" ; f = ident ->
-      identifier_expectation_oneof _loc f res
+    identifier_expectation_oneof _loc f res
     (* 関数定義 *)
     | res = SELF ; "should" ; OPT "be" ; "(" ; "fun" ; args = LIST1 ipatt; "->" ;
       e = expr ; ")" ; exp = OPT expr LEVEL "top" -> function_expectation _loc args e res exp;
+    (* 強制的に失敗させる *)
+    | "fail" ; res = STRING -> force_failure_expectation _loc res;
+    (* パターンマッチさせる *)
+    | res = SELF ; "should" ; OPT "be" ; "match" ; "("; cases = ipatt ; ")" ->
+    matching_expecation _loc cases res;
     | "before"; "all" ; "begin" ; seq = LIST0 expr; "end" -> before_all_block _loc seq;
     | "before"; "each"; "begin"; seq = LIST0 expr; "end" -> before_each_block _loc seq;
     | "after"; "all"; "begin"; seq = LIST0 expr; "end" -> after_all_block _loc seq;
