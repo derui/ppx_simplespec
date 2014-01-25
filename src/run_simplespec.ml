@@ -14,7 +14,7 @@ let parse_argv () =
     let regexp = Str.regexp "," in
     packages := Str.split regexp packs in
   Arg.parse [("-package", Arg.String split_packages, "packages to be using in the spec files.")]
-    anon "Usage : simplespec -package p1,p2,... <file> <file> ...";
+            anon "Usage : simplespec -package p1,p2,... <file> <file> ...";
   (format, List.rev !files, !packages)
 
 let run_spec format file =
@@ -26,10 +26,10 @@ let run_spec format file =
 let rec run_files format = function
   | [] -> ()
   | file :: files ->
-    begin
-      run_spec format file;
-      run_files format files
-    end
+     begin
+       run_spec format file;
+       run_files format files
+     end
 
 let load_object_files files =
   let package = Findlib.package_directory "simplespec" in
@@ -37,15 +37,35 @@ let load_object_files files =
   Topdirs.dir_directory package;
   List.iter load_obj files
 
+let get_package_property param package property =
+  try
+    Some (Findlib.package_property param package property)
+  with Not_found -> None
+
 let rec load_package_byte_files = function
   | [] -> ()
   | package :: rest ->
-    let path = Findlib.package_directory package in
-    let archive = Findlib.package_property ["byte"] package "archive" in
-    let load_obj () = Topdirs.dir_load Format.std_formatter (path ^ "/" ^ archive) in
-    Topdirs.dir_directory path;
-    load_obj ();
-    load_object_files rest
+     let path =
+       try
+         Findlib.package_directory package
+       with Not_found -> "" in
+
+     let archive = get_package_property ["byte"] package "archive" in
+     let requires = get_package_property [] package "requires" in
+     let load_obj () =
+       match (path, archive) with
+       | _, None -> ()
+       | path, Some(archive) -> Topdirs.dir_load Format.std_formatter (path ^ "/" ^ archive) in
+
+     begin
+       match requires with
+       | Some(r) when r <> "" -> load_package_byte_files (Str.split (Str.regexp " +") r)
+       | _ -> ()
+     end;
+
+     Topdirs.dir_directory path;
+     load_obj ();
+     load_package_byte_files rest
 
 let () =
   (* interactive deactivate *)

@@ -98,7 +98,8 @@ lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false)
 spec: $(OCamlProgramOnlyByte simplespec, run_simplespec)
 
 INSTALL_FILES[] =$(addsuffix .cmo, $(FILES))
-INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
+INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false)
+INSTALL_FILES += simplespec$(EXE)
 
 OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
 
