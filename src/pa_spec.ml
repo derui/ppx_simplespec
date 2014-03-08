@@ -144,11 +144,10 @@ let exception_expectation _loc case res =
   let str_exception = string_of_patt case in
   let case = <:match_case< $case$ -> Simplespec.Spec.add_successful_expectation example>> in
   <:expr<
-  try $res$ with
+  try ignore ($res$) with
   | $case$
   | _ -> Simplespec.Spec.add_failure_expectation example "raise" $str:str_res$ $str:str_exception$
   >>
-
 
 (* itブロックの中身をexampleとして実行する  *)
 let to_example_block _loc desc seq =

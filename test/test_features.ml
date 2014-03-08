@@ -63,6 +63,7 @@ end
 
 describe "Matching exception to raise" begin
   it "should be able to match exception" begin
-    (failwith "test") should raise (Failure _);
+    let f _ = failwith "func" in
+    (f ()) should raise (Failure _);
   end;
 end
