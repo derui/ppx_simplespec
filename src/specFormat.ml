@@ -35,7 +35,7 @@ module Formatters = struct
           Format.fprintf fmt "@[%s [%d/%d]@\n" descr (List.length successes) count;
           List.iter (function
           | Successful -> ()
-          | Failure (op, expect, active) -> Format.fprintf fmt "@;<2 2>Failure : %s %s %s@\n" expect op active
+          | Fail (op, expect, active) -> Format.fprintf fmt "@;<2 2>Failure : %s %s %s@\n" expect op active
           | Error err -> Format.fprintf fmt "@;<2 2>Error : %s@\n" err
           ) failures;
           Format.fprintf fmt "@]"

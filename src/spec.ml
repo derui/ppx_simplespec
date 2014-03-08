@@ -1,5 +1,5 @@
 type spec_result = Successful
-                   | Failure of string * string * string
+                   | Fail of string * string * string
                    | Error of string
 
 (* Spec内における、一つのitに対応するモジュール
@@ -38,7 +38,7 @@ module Example = struct
     let regexp = Str.regexp "[ \t\r\n]" in
     let result_str = Str.global_replace regexp "" result_str
     and expect_str = Str.global_replace regexp "" expect_str in
-    example.expectations <- Failure (ope_str, result_str, expect_str) :: example.expectations
+    example.expectations <- Fail (ope_str, result_str, expect_str) :: example.expectations
 
   let add_error example str =
     example.expectations <- Error str :: example.expectations

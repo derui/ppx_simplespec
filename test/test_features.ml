@@ -60,3 +60,9 @@ describe "Matching with cases" begin
   end;
 end
 ;;
+
+describe "Matching exception to raise" begin
+  it "should be able to match exception" begin
+    (failwith "test") should raise (Failure _);
+  end;
+end

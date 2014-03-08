@@ -139,6 +139,17 @@ let matching_expecation _loc case res =
   >>
 ;;
 
+let exception_expectation _loc case res =
+  let str_res = string_of_expr res in
+  let str_exception = string_of_patt case in
+  let case = <:match_case< $case$ -> Simplespec.Spec.add_successful_expectation example>> in
+  <:expr<
+  try $res$ with
+  | $case$
+  | _ -> Simplespec.Spec.add_failure_expectation example "raise" $str:str_res$ $str:str_exception$
+  >>
+
+
 (* itブロックの中身をexampleとして実行する  *)
 let to_example_block _loc desc seq =
   <:expr<
@@ -221,8 +232,10 @@ EXTEND Gram
     (* 強制的に失敗させる *)
     | "fail" ; res = STRING -> force_failure_expectation _loc res;
     (* パターンマッチさせる *)
-    | res = SELF ; "should" ; OPT "be" ; "match" ; "("; cases = ipatt ; ")" ->
+    | res = SELF ; "should" ; "match" ; "("; cases = ipatt ; ")" ->
     matching_expecation _loc cases res;
+    (* 指定されたException *)
+    | res = SELF ; "should" ; "raise" ; "(" ; e = ipatt; ")" -> exception_expectation _loc e res
     | "before"; "all" ; "begin" ; seq = LIST0 expr; "end" -> before_all_block _loc seq;
     | "before"; "each"; "begin"; seq = LIST0 expr; "end" -> before_each_block _loc seq;
     | "after"; "all"; "begin"; seq = LIST0 expr; "end" -> after_all_block _loc seq;
