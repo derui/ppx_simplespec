@@ -15,6 +15,15 @@ describe "The number one" begin
     1 should (fun x -> (1 - x) = 0);
   end
 end
+;;
+
+describe "The string" begin
+  it "should equal test to 'test'" begin
+    "test" should = "test"
+  end;
+
+end
+;;
 
 let r = ref 1 in
 describe "Preparation and post-process each example" begin
