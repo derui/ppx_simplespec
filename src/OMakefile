@@ -86,18 +86,21 @@ OCAML_BYTE_LINK_FLAGS += -linkall dynlink.cma camlp4o.cma
 FILES[] =
 	spec
 	specFormat
-	pa_spec
 #
+PA_FILES[] =
+	pa_spec
+
 PACKAGE = simplespec
 #
 # pa_spec以外をパッケージにする
 MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false)
+lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary pa_spec, pa_spec)
 
 spec: $(OCamlProgramOnlyByte simplespec, run_simplespec)
 
 INSTALL_FILES[] =$(addsuffix .cmo, $(FILES))
+INSTALL_FILES[] =$(addsuffix .cmo, $(PA_FILES))
 INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false)
 INSTALL_FILES += simplespec$(EXE)
 

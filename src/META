@@ -1,6 +1,7 @@
 version = "0.0.2"
 description = "Simple specification unit test tool inspired OSpec"
 
+requires = "str camlp4"
 archive(byte) = "simplespec.cma"
 archive(byte, plugin) = "simplespec.cma"
 archive(native) = "simplespec.cmxa"
