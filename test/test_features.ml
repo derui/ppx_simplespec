@@ -19,8 +19,9 @@ end
 
 describe "The string" begin
   it "should equal test to 'test'" begin
-    "test" should = "test"
-  end;
+    let a = "test" in
+    a should = "test";
+  end
 
 end
 ;;
@@ -36,11 +37,11 @@ describe "Preparation and post-process each example" begin
   end;
 
   it "should run each spec that in on before and after" begin
-    2 should = !r
+    2 should = (!r)
   end;
 
   it "should run spec that in on before and after in twice" begin
-    2 should = !r
+    2 should = (!r)
   end;
 end
 ;;
