@@ -9,13 +9,15 @@ let parse_argv () =
   let format = "text" in
   let files = ref [] in
   let packages = ref [] in
+  let objs = ref [] in
   let anon s = files := s :: !files in
-  let split_packages packs =
+  let split_args r = fun args ->
     let regexp = Str.regexp "," in
-    packages := Str.split regexp packs in
-  Arg.parse [("-package", Arg.String split_packages, "packages to be using in the spec files.")]
+    r := Str.split regexp args in
+  Arg.parse [("-package", Arg.String (split_args packages), "packages to be using in the spec files.");
+             ("-objs", Arg.String (split_args objs), "objects to be using in the spec files.")]
             anon "Usage : simplespec -package p1,p2,... <file> <file> ...";
-  (format, List.rev !files, !packages)
+  (format, List.rev !files, !packages, !objs)
 
 let run_spec format file =
   ignore (Toploop.use_silently Format.std_formatter file);
@@ -31,11 +33,16 @@ let rec run_files format = function
        run_files format files
      end
 
-let load_object_files files =
+let load_simplespec_file files =
   let package = Findlib.package_directory "simplespec" in
   let load_obj file = Topdirs.dir_load Format.std_formatter (package ^ "/" ^ file) in
   Topdirs.dir_directory package;
   List.iter load_obj files
+
+let load_object_files objs =
+  List.iter (fun obj ->
+    Topdirs.dir_load Format.std_formatter obj
+  ) objs
 
 let get_package_property param package property =
   try
@@ -73,8 +80,9 @@ let () =
   (* enable toplevel environment *)
   Toploop.initialize_toplevel_env ();
 
-  let format, files, packages = parse_argv () in
-  load_object_files ["simplespec.cma"];
+  let format, files, packages,objs = parse_argv () in
+  load_simplespec_file ["simplespec.cma"];
   load_package_byte_files packages;
+  load_object_files objs;
 
   run_files format files

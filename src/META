@@ -1,10 +1,19 @@
 version = "0.0.2"
 description = "Simple specification unit test tool inspired OSpec"
+
 requires = "str camlp4"
-archive(syntax, preprocessor) = "pa_spec.cmo"
-archive(syntax, toploop) = "pa_spec.cmo"
 archive(byte) = "simplespec.cma"
 archive(byte, plugin) = "simplespec.cma"
 archive(native) = "simplespec.cmxa"
-exists_if = "pa_spec.cma simplespec.cma"
+archive(native, plugin) = "simplespec.cmxa"
+exists_if = "simplespec.cma"
 
+package "syntax" (
+  version = "0.0.2"
+  description = "Syntax plugin for Simplespec"
+
+  requires = "str camlp4"
+  archive(syntax, preprocessor) = "pa_spec.cmo"
+  archive(syntax, toploop) = "pa_spec.cmo"
+  exists_if = "pa_spec.cmo"
+)

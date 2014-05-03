@@ -111,12 +111,13 @@ let function_expectation_oneof _loc op res =
 (* shouldに比較演算子が渡された場合のexpectationを行う *)
 let infixop_expectation_with_string _loc op res exp =
   let str_op = string_of_expr op in
+  let str_res = string_of_expr res in
   <:expr<
   try
-    if $op$ $str:res$ $str:exp$ then
+    if $op$ $res$ $str:exp$ then
       Simplespec.Spec.add_successful_expectation example
     else
-      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:res$ $str:exp$;
+      Simplespec.Spec.add_failure_expectation example $str:str_op$ $str:str_res$ $str:exp$;
   with e -> Simplespec.Spec.add_error example (Printexc.to_string e)
   >>
 ;;
@@ -214,7 +215,7 @@ EXTEND Gram
     | "it" ; des = STRING ; "pending" -> to_pending_example_block _loc des
     | "it" ; des = STRING ; "begin" ; seq = LIST0 expr; "end" -> to_example_block _loc des seq
     (* 比較演算子と文字列リテラル *)
-    | res = STRING ; "should" ; OPT "be" ; op = infixop0; exp = STRING ->
+    | res = SELF ; "should" ; OPT "be" ; op = infixop0; exp = STRING ->
     infixop_expectation_with_string _loc op res exp
     (* =や<>などの比較演算子 *)
     | res = SELF ; "should" ; OPT "be" ; op = infixop0; exp = SELF ->

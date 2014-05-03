@@ -15,6 +15,16 @@ describe "The number one" begin
     1 should (fun x -> (1 - x) = 0);
   end
 end
+;;
+
+describe "The string" begin
+  it "should equal test to 'test'" begin
+    let a = "test" in
+    a should = "test";
+  end
+
+end
+;;
 
 let r = ref 1 in
 describe "Preparation and post-process each example" begin
@@ -27,11 +37,11 @@ describe "Preparation and post-process each example" begin
   end;
 
   it "should run each spec that in on before and after" begin
-    2 should = !r
+    2 should = (!r)
   end;
 
   it "should run spec that in on before and after in twice" begin
-    2 should = !r
+    2 should = (!r)
   end;
 end
 ;;
