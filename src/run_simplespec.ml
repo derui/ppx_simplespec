@@ -33,8 +33,8 @@ let rec run_files format = function
        run_files format files
      end
 
-let load_simplespec_file files =
-  let package = Findlib.package_directory "simplespec" in
+let load_package_files package files =
+  let package = Findlib.package_directory package in
   let load_obj file = Topdirs.dir_load Format.std_formatter (package ^ "/" ^ file) in
   Topdirs.dir_directory package;
   List.iter load_obj files
@@ -81,7 +81,9 @@ let () =
   Toploop.initialize_toplevel_env ();
 
   let format, files, packages,objs = parse_argv () in
-  load_simplespec_file ["simplespec.cma"];
+  load_package_files "simplespec" ["simplespec.cma"];
+  load_package_files "camlp4" ["camlp4of.cma"];
+  load_package_files "simplespec" ["pa_spec.cmo"];
   load_package_byte_files packages;
   load_object_files objs;
 

@@ -65,8 +65,7 @@ end
 
 describe "Matching with cases" begin
   it "should be able to match result" begin
-    let s = Some 1 in
-    s should match (Some 0 | Some 1);
+    (Some 1) should match (Some 0 | Some 1);
   end;
 end
 ;;

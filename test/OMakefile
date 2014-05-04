@@ -45,6 +45,7 @@ USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
 	simplespec
+	simplespec.syntax
 #    pack1
 #    pack2
 #
@@ -58,7 +59,7 @@ if $(not $(OCAMLFIND_EXISTS))
 #
 OCAMLINCLUDES += 
 
-OCAMLFINDFLAGS = -syntax pa_spec
+OCAMLFINDFLAGS = -syntax camlp4o
 
 #
 # Compile native or byte code?

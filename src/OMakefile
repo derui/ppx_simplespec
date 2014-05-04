@@ -23,7 +23,7 @@
 #
 open MyUtil
 
-.PHONY: lib install clean spec
+.PHONY: lib nstall clean spec
 
 ########################################################################
 # Subdirectories.
@@ -45,7 +45,7 @@ USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
 	camlp4.extend
-	camlp4.quotations.o
+	camlp4.quotations
 	compiler-libs.toplevel
 	findlib
 	str
@@ -59,8 +59,6 @@ if $(not $(OCAMLFIND_EXISTS))
 # Include path
 #
 OCAMLINCLUDES += 
-
-OCAMLFINDFLAGS = -syntax camlp4o 
 
 #
 # Compile native or byte code?
@@ -95,9 +93,13 @@ PACKAGE = simplespec
 # pa_spec以外をパッケージにする
 MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary pa_spec, pa_spec)
+section
+	lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary pa_spec, pa_spec)
+	spec: $(OCamlProgramOnlyByte simplespec, run_simplespec)
 
-spec: $(OCamlProgramOnlyByte simplespec, run_simplespec)
+section
+	OCAMLFINDFLAGS += -pp camlp4of
+	pa_spec.o pa_spec.cmo pa_spec.cmi pa_spec.cmx:
 
 INSTALL_FILES[] =$(addsuffix .cmo, $(FILES))
 INSTALL_FILES[] =$(addsuffix .cmo, $(PA_FILES))
