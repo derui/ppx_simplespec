@@ -44,9 +44,7 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	camlp4.extend
-	camlp4.quotations.o
-	camlp4.lib
+	compiler-libs.common
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -58,7 +56,7 @@ if $(not $(OCAMLFIND_EXISTS))
 #
 OCAMLINCLUDES += 
 
-OCAMLFINDFLAGS = -syntax camlp4o
+OCAMLFINDFLAGS = 
 
 #
 # Compile native or byte code?
@@ -88,18 +86,18 @@ FILES[] =
 	specFormat
 #
 PACKAGE = simplespec
-LIB = pa_spec
+LIB = ppx_spec
 #
-# pa_spec以外をパッケージにする
+# ppx_spec以外をパッケージにする
 MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
-MyOCamlLibrary($(LIB), pa_spec)
+OCamlProgram($(LIB), ppx_spec)
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary $(LIB), pa_spec)
+lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary $(LIB), ppx_spec)
 
 INSTALL_FILES[] =
 INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
-INSTALL_FILES += $(OCamlLibrary $(LIB), pa_spec)
+INSTALL_FILES += $(OCamlProgram $(LIB), ppx_spec)
 
 OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
 
-.DEFAULT: lib
+.DEFAULT: lib $(OCamlProgram $(LIB), ppx_spec)
