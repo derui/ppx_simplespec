@@ -44,7 +44,6 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	simplespec
 #    pack1
 #    pack2
 #
@@ -56,9 +55,13 @@ if $(not $(OCAMLFIND_EXISTS))
 #
 # Include path
 #
-OCAMLINCLUDES += 
+OCAMLINCLUDES +=  ../src
 
-OCAMLFINDFLAGS = -syntax camlp4o
+OCAMLFINDFLAGS = 
+
+PPX=$(file ../src/ppx/ppx_spec)
+OCAMLDEPFLAGS = -ppx "$(PPX)"
+OCAMLPPFLAGS = -ppx "$(PPX)"
 
 #
 # Compile native or byte code?
@@ -68,23 +71,23 @@ OCAMLFINDFLAGS = -syntax camlp4o
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = true
 
-OCAML_LINK_FLAGS += 
-#
 # Various options
 #
-OCAMLFLAGS    += -verbose
-# OCAMLCFLAGS   +=
-# OCAMLOPTFLAGS +=
-# OCAML_LINK_FLAGS +=
-# OCAML_BYTE_LINK_FLAGS +=
-# OCAML_NATIVE_LINK_FLAGS +=
+OCAMLFLAGS    += 
+OCAMLCFLAGS   += ../src/simplespec.cma
+OCAMLOPTFLAGS += ../src/simplespec.cmxa
+OCAML_LINK_FLAGS += 
+OCAML_BYTE_LINK_FLAGS += 
+OCAML_NATIVE_LINK_FLAGS +=
 
 ################################################
 # Build an OCaml library
 #
 EXEC=test_features
+FILES[]=
+	test_features
 
-test: $(OCamlProgram test_features, test_features)
+test: $(OCamlProgram test_features, $(FILES))
 
 run: $(EXEC)
 	./test_features

@@ -1,6 +1,6 @@
 type result = Successful
-                   | Failure
-                   | Error of string
+            | Failure
+            | Error of string
 type spec_result = string * result
 
 module Recorder = struct
@@ -20,10 +20,11 @@ module Spec = struct
 
   let get_spec name = {name;recorder = Recorder.empty ()}
 
-  let record_result ?name recorder spec =
+  let record_result ?name spec expectation =
     let name = match name with None -> "" | Some n -> n in
+    let recorder = spec.recorder in
     try
-      if spec recorder then
+      if expectation then
         recorder.Recorder.specs <- (name, Successful) :: recorder.Recorder.specs
       else
         recorder.Recorder.specs <- (name, Failure) :: recorder.Recorder.specs
@@ -40,3 +41,8 @@ let _all_specs = ref ([] : spec list)
 let add_spec name spec =
   let recorder = Spec.get_spec name in
   _all_specs := (recorder, spec) :: !_all_specs
+
+let run_specs () = 
+  List.map (fun (spec, expectation) ->
+            expectation spec;
+            spec) !_all_specs

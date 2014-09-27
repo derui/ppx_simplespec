@@ -31,7 +31,7 @@ open MyUtil
 # If so, define the subdirectory targets and uncomment this section.
 #
 
-# .SUBDIRS:
+.SUBDIRS: ppx
 
 ################################################
 # Configuration.  You may want to modify any of these configuration
@@ -44,7 +44,6 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	compiler-libs.common
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -84,20 +83,16 @@ OCAMLFLAGS += -annot -bin-annot
 FILES[] =
 	spec
 	specFormat
-#
-PACKAGE = simplespec
-LIB = ppx_spec
-#
-# ppx_spec以外をパッケージにする
-MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
-OCamlProgram($(LIB), ppx_spec)
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary $(LIB), ppx_spec)
+# ppx_spec以外をパッケージにする
+PACKAGE = simplespec
+MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
+
+lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false)
 
 INSTALL_FILES[] =
-INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
-INSTALL_FILES += $(OCamlProgram $(LIB), ppx_spec)
+INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false)
 
 OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
 
-.DEFAULT: lib $(OCamlProgram $(LIB), ppx_spec)
+.DEFAULT: lib

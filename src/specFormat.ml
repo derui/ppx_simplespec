@@ -2,12 +2,12 @@
 
 (* expectationのそれぞれの値について、文字列への変換を行う *)
 module type Formatter = sig
-  val spec_format : Format.formatter -> Spec.Spec.t -> unit
+  val spec_format : Format.formatter -> Spec.Spec.t list -> unit
 end
 
 module type S = sig
 
-  val format : Format.formatter -> Spec.Spec.t -> unit
+  val format : Format.formatter -> Spec.Spec.t list -> unit
 
 end
 
@@ -18,34 +18,35 @@ end
 module Formatters = struct
 
   module Text = struct
-    let spec_format fmt spec =
+    let spec_format fmt specs =
 
       let is_success = function
         | Spec.Successful -> true
         | _ -> false in
 
-      let example_format fmt examples =
+      let result_format fmt results =
         let open Spec in
-        let inner_example_format fmt example = 
-          let descr = example.Example.description
-          and expectations = example.Example.expectations in
-          let count = List.length expectations in
-          let successes = List.filter is_success expectations in
-          let failures = List.filter (fun e -> not (is_success e)) expectations in
-          Format.fprintf fmt "%s [%d/%d]@\n" descr (List.length successes) count;
-          List.iter (function
+        let count = ref 0
+        and successes = ref 0
+        and failures = ref 0 in
+        let inner_result_format fmt (name, result) =
+          count := succ !count;
+          successes := if is_success result then succ !successes else !successes;
+          failures := if not (is_success result) then succ !failures else !failures;
+          match result with
           | Successful -> ()
-          | Failure (op, expect, active) -> Format.fprintf fmt "%s@ %s@ %s@\n" expect op active
+          | Failure -> Format.fprintf fmt "%s@\n" name
           | Error err -> Format.fprintf fmt "Error@ :@ %s@\n" err
-          ) failures in
-        List.iter (inner_example_format fmt) examples in
+        in
+        List.iter (inner_result_format fmt) results in
 
       let open Spec in
-      let descr = spec.Spec.description
-      and examples = spec.Spec.examples in
-      Format.fprintf fmt "@[<2>%s@\n%a@]@." descr example_format examples;
-  end
+      List.iter (fun {Spec.name = name; recorder = recorder} ->
+        let name = if name = "" then "no spec name" else name in
+        Format.fprintf fmt "@[<2>%s@\n%a@]@." name result_format recorder.Recorder.specs
+      ) specs
 
+  end
 end
 
 module Text = Make(Formatters.Text)
