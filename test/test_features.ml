@@ -3,8 +3,8 @@ module Simplespec = Simplespec
 let %spec "test features" =
   1 [@should (=) 1];
   "test" [@should (<>) "foobar"];
-  let can a b = a > b in
-  1 [@should can 2]
+  let eq a b = a > b in
+  1 [@should eq 2]
 
 module Fmt = Simplespec.SpecFormat.Text
 

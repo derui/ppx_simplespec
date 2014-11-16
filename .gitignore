@@ -15,3 +15,5 @@
 *.omc
 
 /build/
+src/ppx/
+!src/ppx/*.ml
