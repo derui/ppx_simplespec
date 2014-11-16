@@ -19,3 +19,5 @@
 
 /build/
 /installed/
+src/ppx/
+!src/ppx/*.ml

@@ -23,7 +23,7 @@
 #
 open MyUtil
 
-.PHONY: test run
+.PHONY: lib install clean
 
 ########################################################################
 # Subdirectories.
@@ -44,8 +44,7 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-#    pack1
-#    pack2
+	compiler-libs.common
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -55,13 +54,9 @@ if $(not $(OCAMLFIND_EXISTS))
 #
 # Include path
 #
-OCAMLINCLUDES +=  ../src
+OCAMLINCLUDES += 
 
 OCAMLFINDFLAGS = 
-
-PPX=$(file ../src/ppx/ppx_spec)
-OCAMLDEPFLAGS = -ppx "$(PPX)"
-OCAMLPPFLAGS = -ppx "$(PPX)"
 
 #
 # Compile native or byte code?
@@ -71,23 +66,21 @@ OCAMLPPFLAGS = -ppx "$(PPX)"
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = true
 
+#
 # Various options
 #
-OCAMLFLAGS    += 
-OCAMLCFLAGS   += ../src/simplespec.cma
-OCAMLOPTFLAGS += ../src/simplespec.cmxa
-OCAML_LINK_FLAGS += 
-OCAML_BYTE_LINK_FLAGS += 
+OCAMLFLAGS += -annot -bin-annot -verbose
+# OCAMLCFLAGS   +=
+# OCAMLOPTFLAGS += -annot -bin-annot
+# OCAML_LINK_FLAGS +=
+OCAML_BYTE_LINK_FLAGS +=
 OCAML_NATIVE_LINK_FLAGS +=
 
 ################################################
 # Build an OCaml library
 #
-EXEC=test_features
-FILES[]=
-	test_features
 
-test: $(OCamlProgram test_features, $(FILES))
+PROGRAM=ppx_spec
+OCamlProgram($(PROGRAM), ppx_spec)
 
-run: test
-	./$(EXEC)
+lib: $(PROGRAM)
