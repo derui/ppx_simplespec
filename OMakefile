@@ -36,5 +36,5 @@ INSTALLED = $(BIG_ROOT)/installed
 # If so, define the subdirectory targets and uncomment this section.
 #
 
-LIB = pa_simplespec
+LIB = ppx_simplespec
 
