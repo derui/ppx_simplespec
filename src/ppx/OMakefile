@@ -81,6 +81,11 @@ OCAML_NATIVE_LINK_FLAGS +=
 #
 
 PROGRAM=ppx_spec
-OCamlProgram($(PROGRAM), ppx_spec)
+FILES[]=
+	ppx_spec
+	util
+	attr_conv
+
+OCamlProgram($(PROGRAM), $(FILES))
 
 lib: $(PROGRAM)

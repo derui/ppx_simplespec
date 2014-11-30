@@ -1,11 +1,20 @@
-module Simplespec = Simplespec
 
-let %spec "test features" =
-  1 [@should (=) 1];
-  "test" [@should (<>) "foobar"];
-  let eq a b = a > b in
-  1 [@should eq 2]
+let%spec "test features" =
 
-let () =
-  let s = (Simplespec.Spec.run_specs ()) in
-  Fmt.format Format.std_formatter s
+  let e  = 1 in
+  e [@true][@false];
+  e [@eq 2]
+
+(* open OUnit2  *)
+
+(* let __fun_1 _ = *)
+(*   let e = 1 in *)
+(*   assert_bool e *)
+
+(* let suite = "suite" >::: [ *)
+(*   "test features" >:: __fun_1 *)
+(* ] *)
+
+(* let () = *)
+(*   run_test_tt_main suite *)
+

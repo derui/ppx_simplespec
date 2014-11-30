@@ -19,5 +19,4 @@
 
 /build/
 /installed/
-src/ppx/
-!src/ppx/*.ml
+src/ppx/ppx_spec
