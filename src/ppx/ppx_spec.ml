@@ -39,18 +39,19 @@ let make_test_suite () =
       [("", Exp.constant (Const_string (label, None)));
        ("", Exp.ident {txt = Lident test_name;loc = Location.none})] in
   let test = List.map make_test_with_spec !specs |> Util.list in
+  let test = Exp.apply (Util.to_ounit_fun "test_list") [("", test)] in
   Str.value Nonrecursive [Vb.mk (Pat.var {txt = name_of_suite;loc = Location.none}) test]
 
 (* Mapper to reconstruct for assertions that are change to some assertion method *)
 let rec assertion_mapper = {default_mapper with
   expr = fun mapper strc ->
+    let loc = strc.pexp_loc
+    and attrs = strc.pexp_attributes in
     match strc with
-    | { pexp_desc = Pexp_ident lid;
-        pexp_loc = loc;
-        pexp_attributes = attrs} -> begin
-
-      A.convert_attributes ~loc strc (Exp.ident ~loc lid) attrs
-    end
+    | { pexp_desc = Pexp_ident lid;_} -> 
+       A.convert_attributes ~loc strc (Exp.ident ~loc lid) attrs
+    | {pexp_desc = Pexp_apply (e, args);_} ->
+       A.convert_attributes ~loc strc (Exp.apply ~loc e args) attrs
     | _ -> default_mapper.expr assertion_mapper strc
 }
 
@@ -73,8 +74,6 @@ let spec_mapper argv =
     );
     structure_item = (fun mapper strc ->
       match strc with
-      | {pstr_desc = Pstr_value (exp, attrs);pstr_loc} ->
-        failwith "test"
       | {pstr_desc =
           Pstr_extension (({ txt = "spec"; loc}, pstr),_);_} ->
         begin match pstr with

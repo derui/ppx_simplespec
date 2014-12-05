@@ -44,6 +44,7 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
+	oUnit
 #    pack1
 #    pack2
 #
@@ -88,6 +89,4 @@ FILES[]=
 	test_features
 
 test: $(OCamlProgram test_features, $(FILES))
-
-run: test
 	./$(EXEC)

@@ -8,9 +8,23 @@ open Location
 module U = Util
 
 (* expression to assertion. *)
-let assert_true loc exp = Exp.apply ~loc (U.to_ounit_fun ~loc "assert_true") [("", exp)]
-let assert_false loc exp = Exp.apply ~loc (U.to_ounit_fun ~loc "assert_true")
-       [("", Exp.apply ~loc (Exp.ident {txt = Lident "not";loc}) [("", exp)])]
+let payload_to_txt attr_name = function
+  | PStr [{pstr_desc = Pstr_eval (e, _);_}] -> begin
+    match e with
+    | {pexp_desc = Pexp_constant (Const_string (str, _));_} ->
+       str
+    | _ -> failwith (Printf.sprintf "%s is only accept string" attr_name)
+  end
+  | _ -> attr_name
+
+let assert_true loc exp description =
+  let description = Exp.constant (Const_string (description, None)) in
+  Exp.apply ~loc (U.to_ounit_fun ~loc "assert_bool") [("", description) ;("", exp)]
+let assert_false loc exp description =
+  let description = Exp.constant (Const_string (description, None)) in
+  Exp.apply ~loc (U.to_ounit_fun ~loc "assert_bool")
+    [("", description);
+     ("", Exp.apply ~loc (Exp.ident {txt = Lident "not";loc}) [("", exp)])]
 
 let assert_equal loc exp = function
   | PStr ([{pstr_desc =
@@ -22,8 +36,8 @@ let assert_equal loc exp = function
   | _ -> failwith "@eq only accept expression"
 
 let attr_to_assertion exp = function
-  | ({txt = "true";loc},_) -> assert_true loc exp
-  | ({txt = "false";loc},_) -> assert_false loc exp
+  | ({txt = "true";loc}, payload) -> payload_to_txt "assert_true" payload |>  assert_true loc exp
+  | ({txt = "false";loc}, payload) -> payload_to_txt "assert_false" payload |> assert_false loc exp
   | ({txt = "eq";loc}, payload) -> assert_equal loc exp payload
   | _ -> failwith ""
 

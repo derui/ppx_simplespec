@@ -1,9 +1,12 @@
 
 let%spec "test features" =
 
-  let e  = 1 in
-  e [@true][@false];
-  e [@eq 2]
+  let e = 1 in
+  e [@eq 1];
+  (e = 1) [@true "" ][@false "can not through"]
+
+let%spec "some specs" =
+  1 + 1 [@eq 2]
 
 (* open OUnit2  *)
 
