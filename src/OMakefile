@@ -23,7 +23,7 @@
 #
 open MyUtil
 
-.PHONY: lib nstall clean spec
+.PHONY: lib install clean
 
 ########################################################################
 # Subdirectories.
@@ -31,7 +31,7 @@ open MyUtil
 # If so, define the subdirectory targets and uncomment this section.
 #
 
-.SUBDIRS: ppx
+# .SUBDIRS:
 
 ################################################
 # Configuration.  You may want to modify any of these configuration
@@ -44,6 +44,7 @@ open MyUtil
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
+	compiler-libs.common
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -56,6 +57,7 @@ if $(not $(OCAMLFIND_EXISTS))
 OCAMLINCLUDES += 
 
 OCAMLFINDFLAGS = 
+
 #
 # Compile native or byte code?
 #
@@ -63,33 +65,33 @@ OCAMLFINDFLAGS =
 #
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = true
+
 #
 # Various options
 #
-OCAMLFLAGS += -g -annot -bin-annot 
+OCAMLFLAGS += -annot -bin-annot -verbose
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS += -annot -bin-annot
-OCAML_LINK_FLAGS += -linkall 
-OCAML_BYTE_LINK_FLAGS += -linkall dynlink.cma camlp4o.cma 
-# OCAML_NATIVE_LINK_FLAGS +=
+# OCAML_LINK_FLAGS +=
+OCAML_BYTE_LINK_FLAGS +=
+OCAML_NATIVE_LINK_FLAGS +=
 
 ################################################
 # Build an OCaml library
 #
 
-FILES[] =
-	spec
-	specFormat
+PROGRAM=ppx_simplespec
+FILES[]=
+	util
+	assert_equal_conv
+	attr_conv
+	ppx_simplespec
 
-# ppx_spec以外をパッケージにする
-PACKAGE = simplespec
-MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
+OCamlProgram($(PROGRAM), $(FILES))
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false)
+MyOCamlPackageExtras[] =
+	./ppx_simplespec.run
+	./ppx_simplespec.opt
+	./ppx_simplespec$(EXE)
 
-INSTALL_FILES[] =
-INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false)
-
-OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
-
-.DEFAULT: lib spec
+MyOCamlPackage($(PROGRAM), $(FILES), $(EMPTY), $(EMPTY), true)

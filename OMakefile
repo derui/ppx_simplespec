@@ -40,8 +40,4 @@ LIB = ppx_simplespec
 
 INSTALL_DIR = $(dirname $(shella which ocamlc))
 
-install: src/simplespec
-	cp src/simplespec $(INSTALL_DIR)
-
-uninstall: src/simplespec
-	rm -rf $(INSTALL_DIR)/simplespec
+.DEFAULT: lib
