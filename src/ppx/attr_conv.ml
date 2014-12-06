@@ -6,6 +6,7 @@ open Longident
 open Location
 
 module U = Util
+module EQ = Assert_equal_conv
 
 (* expression to assertion. *)
 let payload_to_txt attr_name = function
@@ -17,6 +18,7 @@ let payload_to_txt attr_name = function
   end
   | _ -> attr_name
 
+(* assert_bool and derived *)
 let assert_true loc exp description =
   let description = Exp.constant (Const_string (description, None)) in
   Exp.apply ~loc (U.to_ounit_fun ~loc "assert_bool") [("", description) ;("", exp)]
@@ -26,20 +28,12 @@ let assert_false loc exp description =
     [("", description);
      ("", Exp.apply ~loc (Exp.ident {txt = Lident "not";loc}) [("", exp)])]
 
-let assert_equal loc exp = function
-  | PStr ([{pstr_desc =
-      Pstr_eval ({pexp_desc = e ;_}, _);
-            pstr_loc = loc
-           }]) -> begin
-    Exp.apply ~loc (U.to_ounit_fun ~loc "assert_equal") [("", Exp.mk ~loc e); ("", exp)]
-  end
-  | _ -> failwith "@eq only accept expression"
-
 let attr_to_assertion exp = function
   | ({txt = "true";loc}, payload) -> payload_to_txt "assert_true" payload |>  assert_true loc exp
   | ({txt = "false";loc}, payload) -> payload_to_txt "assert_false" payload |> assert_false loc exp
-  | ({txt = "eq";loc}, payload) -> assert_equal loc exp payload
-  | _ -> failwith ""
+  | ({txt = "eq";loc}, payload) -> EQ.assert_equal loc exp payload
+  | ({txt = "ne";loc}, payload) -> EQ.assert_not_equal loc exp payload
+  | _ -> exp                    (* return only expression without attributes *)
 
 let rec attrs_to_assertion exp attrs assertions =
   match attrs with

@@ -85,6 +85,7 @@ FILES[]=
 	ppx_spec
 	util
 	attr_conv
+	assert_equal_conv
 
 OCamlProgram($(PROGRAM), $(FILES))
 
