@@ -28,11 +28,24 @@ let assert_false loc exp description =
     [("", description);
      ("", Exp.apply ~loc (Exp.ident {txt = Lident "not";loc}) [("", exp)])]
 
+(* assert_raises and derived *)
+let assert_raises loc exp = function
+  | PStr [{pstr_desc = Pstr_eval (e, _);_}] -> begin
+    Printf.printf "hoge";
+    match e with
+    | {pexp_desc = Pexp_construct (ident, e');_} ->
+       Exp.apply ~loc (U.to_ounit_fun ~loc "assert_raises")
+         [("", e);("", exp)]
+    | _ -> failwith "[@raises] can only accept constructor for Exception"
+  end
+  | _ -> failwith "[@raises] should apply with expression"
+
 let attr_to_assertion exp = function
   | ({txt = "true";loc}, payload) -> payload_to_txt "assert_true" payload |>  assert_true loc exp
   | ({txt = "false";loc}, payload) -> payload_to_txt "assert_false" payload |> assert_false loc exp
   | ({txt = "eq";loc}, payload) -> EQ.assert_equal loc exp payload
   | ({txt = "ne";loc}, payload) -> EQ.assert_not_equal loc exp payload
+  | ({txt = "raises";loc}, payload) -> assert_raises loc exp payload
   | _ -> exp                    (* return only expression without attributes *)
 
 let rec attrs_to_assertion exp attrs assertions =
