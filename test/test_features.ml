@@ -10,4 +10,6 @@ let%spec "some specs" =
 
 let%spec "raise exception" =
   let list = [1;2;3] in
-  (fun () -> List.find ((=) 0) list) [@raises Not_found]
+  (fun () -> List.find ((=) 0) list) [@raises Not_found];
+  let runner () = List.find ((=) 4) list in
+  runner [@raises Not_found]

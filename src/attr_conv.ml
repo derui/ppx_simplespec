@@ -40,6 +40,22 @@ let assert_raises loc exp = function
   end
   | _ -> failwith "[@raises] should apply with expression"
 
+module AssertType = struct
+  type t = Asty_true of attribute
+           | Asty_false of attribute
+           | Asty_equal of attribute
+           | Asty_not_equal of attribute
+           | Asty_raises of attribute
+
+  let of_attribute = function
+    | ({txt = "true";loc}, _) as p -> Some(Asty_true p)
+    | ({txt = "false";loc}, _) as p -> Some(Asty_false p)
+    | ({txt = "eq";loc}, _) as p -> Some(Asty_equal p)
+    | ({txt = "ne";loc}, _) as p -> Some(Asty_not_equal p)
+    | ({txt = "raises";loc}, _) as p -> Some(Asty_raises p)
+    | _ -> None
+end
+
 let attr_to_assertion exp = function
   | ({txt = "true";loc}, payload) -> payload_to_txt "assert_true" payload |>  assert_true loc exp
   | ({txt = "false";loc}, payload) -> payload_to_txt "assert_false" payload |> assert_false loc exp
@@ -54,9 +70,21 @@ let rec attrs_to_assertion exp attrs assertions =
   | [attr] -> attr_to_assertion exp attr :: assertions 
   | attr :: rest -> attrs_to_assertion exp rest (attr_to_assertion exp attr :: assertions)
 
-let convert_attributes ~loc strc exp attrs =
+let convert_attributes ~loc exp attrs =
   let assertions = attrs_to_assertion exp attrs [] in
   match List.rev assertions with
-  | [] -> strc
+  | [] -> exp
   | [assertion] -> assertion
   | assertion :: rest -> List.fold_left (fun memo asrt -> Exp.sequence memo asrt) assertion rest
+
+let rec contains_assert = function
+  | [] -> false
+  | [attr] -> begin match AssertType.of_attribute attr with
+    | Some _ -> true
+    | None -> false
+  end
+  | attr :: rest -> begin match AssertType.of_attribute attr with
+    | Some _ -> true
+    | None -> contains_assert rest
+  end
+     

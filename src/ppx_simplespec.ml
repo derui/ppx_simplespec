@@ -47,14 +47,11 @@ let rec assertion_mapper = {default_mapper with
   expr = fun mapper strc ->
     let loc = strc.pexp_loc
     and attrs = strc.pexp_attributes in
-    match strc with
-    | { pexp_desc = Pexp_ident lid;_} -> 
-       A.convert_attributes ~loc strc (Exp.ident ~loc lid) attrs
-    | {pexp_desc = Pexp_apply (e, args);_} ->
-       A.convert_attributes ~loc strc (Exp.apply ~loc e args) attrs
-    | {pexp_desc = Pexp_fun (label, def, pat, exp);_} ->
-       A.convert_attributes ~loc strc (Exp.fun_ ~loc label def pat exp) attrs
-    | _ -> default_mapper.expr assertion_mapper strc
+    let e = strc.pexp_desc in
+    if A.contains_assert attrs then
+      A.convert_attributes ~loc (Exp.mk ~loc e) attrs
+    else
+      default_mapper.expr assertion_mapper strc
 }
 
 let spec_mapper argv =
