@@ -6,7 +6,7 @@ let%spec "boolean specs" =
 
 let%spec "some specs" =
   1 + 1 [@eq 2];
-  1 + 0 [@ne  2 [@cmp ]]
+  1 + 0 [@ne 2]
 
 let%spec "raise exception" =
   let list = [1;2;3] in

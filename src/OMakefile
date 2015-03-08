@@ -4,6 +4,7 @@ USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
 	compiler-libs.common
+	oUnit
 #
 # Include path
 #
@@ -25,7 +26,7 @@ BYTE_ENABLED = true
 OCAMLFLAGS += -annot -bin-annot
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS += -annot -bin-annot
-# OCAML_LINK_FLAGS +=
+OCAML_LINK_FLAGS += -linkall
 OCAML_BYTE_LINK_FLAGS +=
 OCAML_NATIVE_LINK_FLAGS +=
 

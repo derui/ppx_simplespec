@@ -31,7 +31,6 @@ let assert_false loc exp description =
 (* assert_raises and derived *)
 let assert_raises loc exp = function
   | PStr [{pstr_desc = Pstr_eval (e, _);_}] -> begin
-    Printf.printf "hoge";
     match e with
     | {pexp_desc = Pexp_construct (ident, e');_} ->
        Exp.apply ~loc (U.to_ounit_fun ~loc "assert_raises")
