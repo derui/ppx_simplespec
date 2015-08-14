@@ -1,5 +1,7 @@
 open MyUtil
 
+.PHONY: lib
+
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
@@ -43,4 +45,6 @@ FILES[]=
 
 OCamlProgram($(PROGRAM), $(FILES))
 
-.DEFAULT: $(PROGRAM)
+lib: $(PROGRAM)
+
+.DEFAULT: lib

@@ -41,4 +41,17 @@ MyOCamlPackageExtras[] =
 	../src/ppx_simplespec.opt
 	../src/ppx_simplespec$(EXE)
 
-MyOCamlPackage($(LIB), $(FILES), $(EMPTY), $(EMPTY), true)
+MyOCamlPackage($(LIB), $(EMPTY), $(EMPTY), $(EMPTY), true)
+
+%.mli : ../src/%.mli
+	cp ../src/*.mli .
+%.cmt : ../src/%.cmt
+	cp ../src/*.cmt .
+%.cmti : ../src/%.cmti
+	cp ../src/*.cmti .
+	
+clean:
+	rm -f .*.mli
+	rm -f .*.cmt
+	rm -f .*.cmti
+
