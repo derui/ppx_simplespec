@@ -1,64 +1,16 @@
-########################################################################
-# Permission is hereby granted, free of charge, to any person
-# obtaining a copy of this file, to deal in the File without
-# restriction, including without limitation the rights to use,
-# copy, modify, merge, publish, distribute, sublicense, and/or
-# sell copies of the File, and to permit persons to whom the
-# File is furnished to do so, subject to the following condition:
-#
-# THE FILE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-# DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE FILE OR
-# THE USE OR OTHER DEALINGS IN THE FILE.
-
-########################################################################
-# The standard OMakefile.
-# You will usually need to modify this file for your project.
-
-########################################################################
-# Phony targets are scoped, so you probably want to declare them first.
-#
 open MyUtil
 
-.PHONY: lib install clean
-
-########################################################################
-# Subdirectories.
-# You may want to include some subdirectories in this project.
-# If so, define the subdirectory targets and uncomment this section.
-#
-
-# .SUBDIRS:
-
-################################################
-# Configuration.  You may want to modify any of these configuration
-# variables.
-#
-
-#
-# This project requires ocamlfind (default - false).
-#
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	camlp4.extend
-	camlp4.quotations.o
-	camlp4.lib
-#
-if $(not $(OCAMLFIND_EXISTS))
-   eprintln(This project requires ocamlfind, but is was not found.)
-   eprintln(You need to install ocamlfind and run "omake --configure".)
-   exit 1
-
+	compiler-libs.common
+	oUnit
 #
 # Include path
 #
 OCAMLINCLUDES += 
 
-OCAMLFINDFLAGS = -syntax camlp4o
+OCAMLFINDFLAGS = 
 
 #
 # Compile native or byte code?
@@ -68,38 +20,27 @@ OCAMLFINDFLAGS = -syntax camlp4o
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = true
 
-OCAML_LINK_FLAGS += 
 #
 # Various options
 #
 OCAMLFLAGS += -annot -bin-annot
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS += -annot -bin-annot
-# OCAML_LINK_FLAGS +=
-# OCAML_BYTE_LINK_FLAGS +=
-# OCAML_NATIVE_LINK_FLAGS +=
+OCAML_LINK_FLAGS += -linkall
+OCAML_BYTE_LINK_FLAGS +=
+OCAML_NATIVE_LINK_FLAGS +=
 
 ################################################
 # Build an OCaml library
 #
 
-FILES[] =
-	spec
-	specFormat
-#
-PACKAGE = simplespec
-LIB = pa_spec
-#
-# pa_spec以外をパッケージにする
-MyOCamlPackage($(PACKAGE), $(FILES), $(EMPTY), -linkall, false)
-MyOCamlLibrary($(LIB), pa_spec)
+PROGRAM=ppx_simplespec
+FILES[]=
+	util
+	assert_equal_conv
+	attr_conv
+	ppx_simplespec
 
-lib: $(OCamlPackageGeneratedFiles $(PACKAGE), false) $(OCamlLibrary $(LIB), pa_spec)
+OCamlProgram($(PROGRAM), $(FILES))
 
-INSTALL_FILES[] =
-INSTALL_FILES += $(OCamlPackageGeneratedFiles $(PACKAGE), false) 
-INSTALL_FILES += $(OCamlLibrary $(LIB), pa_spec)
-
-OCamlInstallPackage($(PACKAGE), $(INSTALL_FILES))
-
-.DEFAULT: lib
+.DEFAULT: $(PROGRAM)

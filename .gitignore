@@ -1,3 +1,4 @@
+.omakedb*
 *.cmo
 *.cmi
 *.cmt
@@ -13,5 +14,9 @@
 *.so
 
 *.omc
+*.run
+*.opt
 
 /build/
+/installed/
+src/ppx/ppx_spec

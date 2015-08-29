@@ -1,13 +1,11 @@
 open MyUtil
 
-.PHONY: test
+.PHONY:install clean
 
 USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
-	oUnit
-#    pack1
-#    pack2
+	compiler-libs.common
 #
 if $(not $(OCAMLFIND_EXISTS))
    eprintln(This project requires ocamlfind, but is was not found.)
@@ -21,10 +19,6 @@ OCAMLINCLUDES +=
 
 OCAMLFINDFLAGS = 
 
-PPX=$(file ../src/ppx_simplespec)
-OCAMLDEPFLAGS = -ppx "$(PPX)"
-OCAMLPPFLAGS = -ppx "$(PPX)"
-
 #
 # Compile native or byte code?
 #
@@ -33,16 +27,18 @@ OCAMLPPFLAGS = -ppx "$(PPX)"
 NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
 BYTE_ENABLED = true
 
+#
 # Various options
 #
-OCAMLFLAGS    += 
-OCAML_LINK_FLAGS += 
-OCAML_BYTE_LINK_FLAGS += 
-OCAML_NATIVE_LINK_FLAGS +=
+OCAMLFLAGS += -annot -bin-annot
 
-EXEC=test_features
+# Only Install
+LIB=ppx_simplespec
 FILES[]=
-	test_features
 
-test: $(OCamlProgram test_features, $(FILES))
-	./$(EXEC)
+MyOCamlPackageExtras[] =
+	../src/ppx_simplespec.run
+	../src/ppx_simplespec.opt
+	../src/ppx_simplespec$(EXE)
+
+MyOCamlPackage($(LIB), $(FILES), $(EMPTY), $(EMPTY), true)

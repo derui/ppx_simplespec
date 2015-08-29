@@ -1,0 +1,8 @@
+name = "ppx_simplespec"
+version = "0.1.0"
+description = "Simple specification unit test tool inspired OSpec"
+
+requires = "oUnit"
+archive(byte) = "ppx_simplespec.cmo"
+archive(native) = "ppx_simplespec.cmx"
+ppx = "./ppx_simplespec"
