@@ -1,4 +1,5 @@
 open MyUtil
+.PHONY: lib ppx
 
 USE_OCAMLFIND = true
 #
@@ -33,14 +34,19 @@ OCAML_NATIVE_LINK_FLAGS +=
 ################################################
 # Build an OCaml library
 #
-
-PROGRAM=ppx_simplespec
+LIB = ppx_simplespec
 FILES[]=
 	util
 	assert_equal_conv
 	attr_conv
-	ppx_simplespec
+	converter
 
-OCamlProgram($(PROGRAM), $(FILES))
+MyOCamlPackage($(LIB), $(FILES), $(EMPTY), $(EMPTY), false)
 
-.DEFAULT: $(PROGRAM)
+lib: $(OCamlPackageGeneratedFiles $(LIB), false)
+ppx: $(OCamlProgramOnlyByte $(LIB), $(FILES))
+
+.DEFAULT: lib ppx
+
+OCamlInstallPackage($(LIB), $(LIB).run META $(LIB).cmxa $(LIB).cma $(LIB).cmt $(LIB).cmi $(LIB).cmx $(LIB).o)
+

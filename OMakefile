@@ -27,16 +27,14 @@ BYTE_ENABLED = true
 
 INSTALLED = $(BIG_ROOT)/installed
 
-.PHONY: all install clean 
-.SUBDIRS: src test lib
+.PHONY: all install clean lib
+.SUBDIRS: src test
 
 ########################################################################
 # Subdirectories.
 # You may want to include some subdirectories in this project.
 # If so, define the subdirectory targets and uncomment this section.
 #
-
-LIB = ppx_simplespec
 
 INSTALL_DIR = $(dirname $(shella which ocamlc))
 

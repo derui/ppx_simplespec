@@ -1,0 +1,10 @@
+name = "ppx_simplespec"
+version = "0.2.0"
+description = "Simple specification unit test tool inspired OSpec"
+
+requires = "compiler-libs ppx_driver oUnit"
+archive(ppx_driver, byte  ) = "ppx_simplespec.cmo"
+archive(ppx_driver, native) = "ppx_simplespec.cmxa"
+archive(ppx_driver, native, plugin) = "ppx_simplespec.cmx"
+exist_if = "ppx_simplespec.cma"
+ppx = "./ppx_simplespec.run"

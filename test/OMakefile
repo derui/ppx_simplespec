@@ -6,6 +6,7 @@ USE_OCAMLFIND = true
 #
 OCAMLPACKS[] =
 	oUnit
+	ppx_simplespec
 #    pack1
 #    pack2
 #
@@ -20,10 +21,6 @@ if $(not $(OCAMLFIND_EXISTS))
 OCAMLINCLUDES += 
 
 OCAMLFINDFLAGS = 
-
-PPX=$(file ../src/ppx_simplespec)
-OCAMLDEPFLAGS = -ppx "$(PPX)"
-OCAMLPPFLAGS = -ppx "$(PPX)"
 
 #
 # Compile native or byte code?
