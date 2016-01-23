@@ -13,3 +13,8 @@ let%spec "raise exception" =
   (fun () -> List.find ((=) 0) list) [@raises Not_found];
   let runner () = List.find ((=) 4) list in
   runner [@raises Not_found]
+
+let%spec "Force fail a test" =
+  try
+    "force fail" [@fail]
+  with _ -> ()

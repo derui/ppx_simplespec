@@ -22,11 +22,16 @@ let payload_to_txt attr_name = function
 let assert_true loc exp description =
   let description = Exp.constant (Const_string (description, None)) in
   Exp.apply ~loc (U.to_ounit_fun ~loc "assert_bool") [("", description) ;("", exp)]
+
 let assert_false loc exp description =
   let description = Exp.constant (Const_string (description, None)) in
   Exp.apply ~loc (U.to_ounit_fun ~loc "assert_bool")
     [("", description);
      ("", Exp.apply ~loc (Exp.ident {txt = Lident "not";loc}) [("", exp)])]
+
+let assert_failure loc exp =
+  let failure = Exp.apply ~loc (U.to_ounit_fun ~loc "assert_failure") [("", exp);] in
+  Exp.apply ~loc (Exp.ident {txt = Lident "ignore";loc}) [("", failure);]
 
 (* assert_raises and derived *)
 let assert_raises loc exp = function
@@ -45,6 +50,7 @@ module AssertType = struct
            | Asty_equal of attribute
            | Asty_not_equal of attribute
            | Asty_raises of attribute
+           | Asty_failure of attribute
 
   let of_attribute = function
     | ({txt = "true";loc}, _) as p -> Some(Asty_true p)
@@ -52,6 +58,7 @@ module AssertType = struct
     | ({txt = "eq";loc}, _) as p -> Some(Asty_equal p)
     | ({txt = "ne";loc}, _) as p -> Some(Asty_not_equal p)
     | ({txt = "raises";loc}, _) as p -> Some(Asty_raises p)
+    | ({txt = "fail";loc}, _) as p -> Some(Asty_raises p)
     | _ -> None
 end
 
@@ -61,6 +68,7 @@ let attr_to_assertion exp = function
   | ({txt = "eq";loc}, payload) -> EQ.assert_equal loc exp payload
   | ({txt = "ne";loc}, payload) -> EQ.assert_not_equal loc exp payload
   | ({txt = "raises";loc}, payload) -> assert_raises loc exp payload
+  | ({txt = "fail"; loc}, payload) -> assert_failure loc exp
   | _ -> exp                    (* return only expression without attributes *)
 
 let rec attrs_to_assertion exp attrs assertions =
