@@ -58,34 +58,36 @@ let spec_mapper argv =
   { default_mapper with
     structure = (fun mapper strc ->
       match strc with
-      | {pstr_desc = Pstr_attribute (({txt;loc}, _));_} :: _ -> [List.hd strc |> mapper.structure_item mapper]
-      | _ -> begin
-        let structure = List.map (mapper.structure_item mapper) strc in
-        let ident = Util.to_ounit_fun "run_test_tt_main" in
-        let suite = make_test_suite () in
-        let runner = Str.eval (
-          Exp.apply ident [("", Exp.ident {txt = Lident name_of_suite; loc = Location.none})]
-        ) in
-        let structure = List.rev structure in
-        let structure = (runner :: suite :: structure) |> List.rev in
-        structure
+      | {pstr_desc = Pstr_extension (({txt = "suite";loc}, payload), _);_} :: rest -> begin
+        match payload with
+        | PStr (strc) -> begin
+          let structure = List.map (mapper.structure_item mapper) strc in
+          let ident = Util.to_ounit_fun "run_test_tt_main" in
+          let suite = make_test_suite () in
+          let runner = Str.eval (
+            Exp.apply ident [("", Exp.ident {txt = Lident name_of_suite; loc = Location.none})]
+          ) in
+          (runner :: suite :: structure) |> List.rev |> fun l -> List.append l (default_mapper.structure mapper rest)
+        end
+        | _ -> default_mapper.structure mapper rest
       end
+      | _ -> default_mapper.structure mapper strc
     );
     structure_item = (fun mapper strc ->
       match strc with
       | {pstr_desc =
           Pstr_extension (({ txt = "spec"; loc}, pstr),_);_} ->
-        begin match pstr with
-        | PStr [{pstr_desc = Pstr_value (_, [{pvb_pat = pat;pvb_expr = e;_}])}] ->
-          begin match pat with
-          | {ppat_desc = Ppat_constant (Const_string (str,_));_} ->
-            let fun_id = unique_fun_id () in
-            specs := (str, fun_id) :: !specs;
-            make_test_fun loc fun_id (assertion_mapper.expr mapper e)
-          | _ -> failwith "spec must contain constant let "
-          end
-        | _ -> failwith "spec have to be extension for structure"
-        end
+         begin match pstr with
+         | PStr [{pstr_desc = Pstr_value (_, [{pvb_pat = pat;pvb_expr = e;_}])}] ->
+            begin match pat with
+            | {ppat_desc = Ppat_constant (Const_string (str,_));_} ->
+               let fun_id = unique_fun_id () in
+               specs := (str, fun_id) :: !specs;
+               make_test_fun loc fun_id (assertion_mapper.expr mapper e)
+            | _ -> failwith "spec must contain constant let "
+            end
+         | _ -> failwith "spec have to be extension for structure"
+         end
       | _ -> default_mapper.structure_item mapper strc)
   }
 
