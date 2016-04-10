@@ -67,7 +67,7 @@ let spec_mapper argv =
           let runner = Str.eval (
             Exp.apply ident [("", Exp.ident {txt = Lident name_of_suite; loc = Location.none})]
           ) in
-          (runner :: suite :: structure) |> List.rev |> fun l -> List.append l (default_mapper.structure mapper rest)
+          (runner :: suite :: (List.rev structure)) |> List.rev |> fun l -> List.append l (default_mapper.structure mapper rest)
         end
         | _ -> default_mapper.structure mapper rest
       end
