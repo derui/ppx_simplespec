@@ -24,8 +24,8 @@ let fun_ args e =
      let rec fun_' pats func =
        match pats with
        | [] -> func
-       | pat :: rest -> fun_' rest (Exp.fun_ "" None (Pat.var {txt = pat;loc = !default_loc}) func) in
-     fun_' rest (Exp.fun_ "" None (Pat.var {txt = pat;loc = !default_loc}) e)
+       | pat :: rest -> fun_' rest (Exp.fun_ Nolabel None (Pat.var {txt = pat;loc = !default_loc}) func) in
+     fun_' rest (Exp.fun_ Nolabel None (Pat.var {txt = pat;loc = !default_loc}) e)
 
 let names_to_module_path paths =
   match paths with

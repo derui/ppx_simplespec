@@ -10,7 +10,7 @@ module U = Util
 type labels = Cmp of expression
 
 let labels_to_tup = function
-  | Cmp e -> ("cmp", e)
+  | Cmp e -> (Labelled "cmp", e)
 
 (* assert_equal and others *)
 let attrs_to_labels attrs =
@@ -38,7 +38,7 @@ let assert_equal loc exp = function
   | PStr ([
     {pstr_desc = Pstr_eval ({pexp_desc = e ;_}, _); pstr_loc = loc}
   ]) -> begin
-    Exp.apply ~loc (U.to_ounit_fun ~loc "assert_equal") [("", Exp.mk ~loc e); ("", exp)]
+    Exp.apply ~loc (U.to_ounit_fun ~loc "assert_equal") [(Nolabel, Exp.mk ~loc e); (Nolabel, exp)]
   end
   | _ -> failwith "@eq only accept expression"
 
@@ -46,7 +46,7 @@ let assert_equal loc exp = function
 let invert_comparator loc e =
   U.fun_ ["a";"b"]
     (Exp.apply ~loc (Exp.ident (U.lid "not")) [
-      ("", Exp.apply e [("", Exp.ident (U.lid "a"));("", Exp.ident (U.lid "b"))])
+      (Nolabel, Exp.apply e [(Nolabel, Exp.ident (U.lid "a"));(Nolabel, Exp.ident (U.lid "b"))])
     ])
 
 let assert_not_equal loc exp = function
@@ -66,7 +66,7 @@ let assert_not_equal loc exp = function
       | Cmp e -> Cmp (invert_comparator loc e)
     ) options in
     let options = List.map labels_to_tup options in
-    let args = List.rev (("", exp) :: ("", Exp.mk ~loc e) :: options) in
+    let args = List.rev ((Nolabel, exp) :: (Nolabel, Exp.mk ~loc e) :: options) in
     Exp.apply ~loc (U.to_ounit_fun ~loc "assert_equal") args
   end
   | _ -> failwith "@ne only accept expression"
