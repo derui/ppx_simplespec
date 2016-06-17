@@ -20,3 +20,4 @@
 /build/
 /installed/
 src/ppx/ppx_spec
+/setup.data
