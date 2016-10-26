@@ -20,7 +20,7 @@ install: [
   ["ocaml" "setup.ml" "-install"]
 ]
 remove: [
-  ["ocaml" "setup.ml" "-uninstall"]
+  "ocaml" "setup.ml" "-uninstall"
 ]
 depends: [
   "ocamlfind"
