@@ -12,6 +12,9 @@ tags: [
   "unit"
 ]
 build: [
+  ["git" "submodule" "init"]
+  ["git" "submodule" "sync"]
+  ["git" "submodule" "update"]
   ["omake" "--configure"]
   ["ocaml" "setup.ml" "-configure" "--prefix=%{prefix}%"]
   ["ocaml" "setup.ml" "-build"]
