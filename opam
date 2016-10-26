@@ -1,0 +1,29 @@
+opam-version: "1.2"
+name: "ppx_simplespec"
+version: "0.2.0"
+maintainer: "derutakayu@gmail.com"
+authors: "derui"
+license: "MIT"
+homepage: "https://github.com/derui/ppx_simplespec"
+bug-reports: "https://github.com/derui/ppx_simplespec"
+dev-repo: "https://github.com/derui/ppx_simplespec"
+tags: [
+  "test"
+  "unit"
+]
+build: [
+  ["omake" "--configure"]
+  ["ocaml" "setup.ml" "-configure" "--prefix=%{prefix}%"]
+  ["ocaml" "setup.ml" "-build"]
+]
+install: [
+  ["ocaml" "setup.ml" "-install"]
+]
+remove: [
+  ["ocaml" "setup.ml" "-uninstall"]
+]
+depends: [
+  "ocamlfind"
+  "omake"
+]
+available: [ocaml-version >= "4.03.0"]
