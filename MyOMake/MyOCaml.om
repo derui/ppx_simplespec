@@ -17,8 +17,8 @@ public.USE_OCAMLFIND = false
         else
             ConfMsgResult($"FAILED - ocamlc not found")
             value false
-    OCAMLC = $(if $(OCAMLC_OPT_EXISTS), $`(if $(USE_OCAMLFIND), ocamlc, ocamlc.opt), ocamlc)
-    OCAMLOPT = $(if $(OCAMLOPT_OPT_EXISTS), $`(if $(USE_OCAMLFIND), ocamlopt, ocamlopt.opt), ocamlopt)
+    OCAMLC = $`(if $(OCAMLC_OPT_EXISTS), $`(if $`(USE_OCAMLFIND), ocamlc, ocamlc.opt), ocamlc)
+    OCAMLOPT = $`(if $(OCAMLOPT_OPT_EXISTS), $`(if $`(USE_OCAMLFIND), opt, ocamlopt.opt), ocamlopt)
     CAMLIDL_EXISTS = $(CheckProg camlidl)
     #
     # Compile native or byte code?
