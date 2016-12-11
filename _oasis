@@ -1,10 +1,9 @@
-OASISFormat: 0.2
+OASISFormat: 0.4
 Name:        ppx_simplespec
-Version:     0.2.0
+Version:     0.3.0
 Synopsis:    Simple BBD library for OCaml
 Authors:     derui
 License:     MIT
-Plugins:     StdFiles (0.2)
 BuildType:   Custom (0.2)
 InstallType: Custom (0.2)
 XCustomBuild:      sh -c "omake PREFIX=$prefix"
